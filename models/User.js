@@ -22,6 +22,9 @@ var User = sequelize.define('user', {
     email: {
         type: Sequelize.STRING
     },
+    roleId: {
+        type: Sequelize.INTEGER
+    },
     createdAt: {
         type: Sequelize.DATE
     },

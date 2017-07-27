@@ -44,8 +44,17 @@
             </ol>
         </div>
 
+        <% include ../helpers/helpers %>
+
         <div class="page-header">
             <h3>USERS</h3>
+        </div>
+        <div class="row">
+            <div class="col-md-11">
+                <a href="/user/create" class="btn btn-success pull-right">Add <i class="fa fa-plus"></i> </a>
+            </div>
+
+            <div class="col-md-1"></div>
         </div>
         <table class="table table-data">
             <thead>
@@ -58,21 +67,33 @@
                 <th>Action</th>
             </tr>
             </thead>
+
             <tbody>
-            <% var no =1; %>
-            <% if(datas.data.length) { %>
-            <% datas.data.forEach(function(result) { %>
+            <% var no = 1; %>
+            <% if(results.length) { %>
+            <% results.forEach(function(result) { %>
+
             <tr>
-                <td><%= no%></td>
-                <td><%= result.username%></td>
-                <td><%= result.fullname%></td>
-                <td><%= result.email%></td>
-                <td></td>
-                <td><%= result.email%></td>
+                <td><%= no %></td>
+                <td><%= result.username %></td>
+                <td><%= result.fullname %></td>
+                <td><%= result.email %></td>
+                <td><%= getRoleName(result.roleId) %></td>
+                <td>
+                    <a href="/user/id/<%= result.id %>"><i class="fa fa-pencil"></i> </a>
+                    &nbsp;&nbsp;&nbsp;
+                    <a href="/user/id/<%= result.id %>"><i class="fa fa-trash"></i> </a>
+                    &nbsp;&nbsp;&nbsp;
+                    <a href="/user/view/<%= result.id %>"><i class="fa fa-eye" aria-hidden="true"></i> </a>
+                </td>
             </tr>
             <% no++; });} %>
             </tbody>
         </table>
+
+
+        <%- pagination('users', count, currentPage) %>
+
     </div>
 </div>
 <% include ../partials/main-footer %>

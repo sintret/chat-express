@@ -1,0 +1,48 @@
+<%
+getRoleName = function (id) {
+    var roles = ['', 'Admin', 'User', 'Client'];
+
+    return roles[id];
+}
+
+pagination = function (linkName, count, currentPage) {
+    var html = '';
+    if (count < 1) {
+        return html;
+    }
+
+    html += '<ul class="pagination">';
+
+    if (currentPage > 1) {
+        html += '<li><a href="/'+linkName+'?page=1">&laquo;</a></li>';
+    }
+
+    var i = 1;
+    if (currentPage > 5) {
+        i = +currentPage - 4;
+    }
+
+    if (i !== 1) {
+        html += '<li class="disabled"><a href="#">...</a></li>';
+    }
+
+    for (i; i<=count; i++) {
+        if (currentPage == i) {
+            html += '<li class="active"><span>'+i+'<span class="sr-only">(current)</span></span></li>';
+        } else {
+            html += '<li><a href="/'+linkName+'?page='+i+'">'+i+'</a></li>';
+        }
+
+        if (i == (+currentPage + 4)) {
+            html +='<li class="disabled"><a href="#">...</a></li>';
+            break;
+        }
+    }
+
+    if (currentPage != count) {
+        html +='<li><a href="/'+linkName+'?page='+count+'">&raquo;</a></li>';
+    }
+
+    return html;
+}
+%>
