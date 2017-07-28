@@ -1,45 +1,55 @@
-<form method="post" action="/user/create">
-    <input type="hidden" value="<%= data.id %>">
+<% include ../helpers/helpers.ejs %>
+<form method="post" action="/user/create" enctype='multipart/form-data'>
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">
                 <label for="fullname">Full Name</label>
-                <input type="text" value="<%= data.fullname %>" class="form-control" id="fullname" required
+                <input type="text" value="<%= data.fullname %>" class="form-control" name="fullname" id="fullname" required
                        placeholder="Fullname">
             </div>
 
             <div class="form-group">
                 <label for="email">Email address</label>
-                <input type="email" <%= data.email %> class="form-control" id="email" placeholder="Email">
+                <input type="email" <%= data.email %> class="form-control" name="email" id="email" placeholder="Email">
             </div>
 
             <div class="form-group">
                 <label for="role">Role</label>
-                <select id="roleId" name="roleId">
-                    
+                <select id="roleId" name="roleId" class="form-control">
+                    <% for (var i = 0; i < dropdownRole.length; i++) { if(i > 0) { %>
+                    <option value="<%= i %>"><%= dropdownRole[i] %></option>
+                    <% } } %>
                 </select>
             </div>
-
 
         </div>
 
 
         <div class="col-md-6">
+
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="email" value="<%= data.username %>" class="form-control" id="username" required
+                <input type="text" value="<%= data.username %>" class="form-control" name="username" id="username" required
                        placeholder="Username">
             </div>
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" <%= data.password %> class="form-control" id="password" placeholder="Password">
+                <input type="password" <%= data.password %> class="form-control" name="password" id="password" placeholder="Password">
             </div>
+
+            <div class="form-group has-success">
+                <label for="photo">File input</label>
+                <input type="file" name="photo" id="photo">
+                <p class="help-block"></p>
+            </div>
+
         </div>
     </div>
 
 
-
-
     <button type="submit" class="btn btn-success">Submit</button>
 </form>
+<div>
+    &nbsp;
+</div>

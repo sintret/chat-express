@@ -1,12 +1,9 @@
 <%
 
-dropdownRole = function () {
-    return ['', 'Admin', 'User', 'Client'];
-}
-getRoleName = function (id) {
-    var roles =  dropdownRole();
+dropdownRole =  ['', 'Admin', 'User', 'Client'];
 
-    return roles[id];
+getRoleName = function (id) {
+    return dropdownRole[id];
 }
 
 pagination = function (linkName, count, currentPage) {

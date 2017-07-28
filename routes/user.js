@@ -1,6 +1,10 @@
 var tRoutes = function (app) {
     const datatable = require('sequelize-datatables');
     const model = require('./../models/User.js');
+    const fileUpload = require('express-fileupload');
+    const hash = require('./../components/Hash.js');
+    var fs = require('fs');
+    app.use(fileUpload());
 
     app.get("/users", function (req, res) {
         var limit = 50;
@@ -39,11 +43,44 @@ var tRoutes = function (app) {
     });
 
     app.post('/user/create', function (req, res) {
+        var today = new Date();
+        var milliseconds = today.getMilliseconds();
+        var photo = 'user.jpg';
+
+        if (!req.files) {
+            return res.status(400).send('No files were uploaded.');
+
+        } else {
+            var sampleFile = req.files.photo;
+            var imageName = milliseconds + sampleFile.name;
+            photo = imageName;
+
+            // Use the mv() method to place the file somewhere on your server
+            sampleFile.mv(__dirname + './../static/images/' + imageName, function (err) {
+                if (err) {
+                    return res.status(500).send(err);
+                } else {
+                    var data = {
+                        username: req.body.username,
+                        fullname: req.body.fullname,
+                        photo: photo,
+                        roleId: req.body.roleId,
+                        email: req.body.email,
+                        password: hash.encrypt(req.body.password)
+                    }
+
+                    model.create(data).then(function (p) {
+                        console.log(p);
+                        res.redirect('/users');
+                    });
+                }
+            });
+        }
 
     });
-    
-    var a = function (req,res,next) {
-        
+
+    var a = function (req, res, next) {
+
     }
 
     app.get('/user/edit/:id', a);
