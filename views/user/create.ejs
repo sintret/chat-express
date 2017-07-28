@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Super Chat</title>
+    <% include ../partials/main-head %>
+    <meta name="description" content="awesome super chat">
+    <meta name="author" content="sintret@gmail.com">
+</head>
+
+<body>
+
+<div class="container app app-grid">
+    <div class="row app-one">
+        <div class="col-sm-4 side">
+            <div class="row heading">
+                <div class="col-sm-3 col-xs-3 heading-avatar">
+                    <div class="heading-avatar-icon">
+                        <img src="/static/img/<%= user.photo %>">
+                    </div>
+                </div>
+                <div class="col-sm-9">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="active"><a href="./">Home</a></li>
+                        <li><a href="/users">Users</a></li>
+                        <li><a href="/logout">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8 side">
+            <div class="row heading">
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <p>&nbsp;</p>
+        <div class="pull-right">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/users">Users</a></li>
+                <li class="breadcrumb-item active"><a href="#">Create</a></li>
+            </ol>
+        </div>
+
+        <% include ../helpers/helpers %>
+
+        <div class="page-header">
+            <h3>USER CREATE</h3>
+        </div>
+
+        <% include ../user/_form %>
+
+
+    </div>
+</div>
+<% include ../partials/main-footer %>
+
+</body>
+</html>

@@ -35,6 +35,10 @@ var tRoutes = function (app) {
         
     });
 
+    app.post('/user/create', function (req,res) {
+
+    });
+
     app.get("/userList", function (req, res) {
         datatable(model, req.query, {}).then(function (result) {
             res.json(result);

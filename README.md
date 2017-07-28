@@ -14,6 +14,7 @@ $ cd express-mysql
 $ npm install
 $ npm install bower -g
 $ bower install bootstrap
+$ bower install components-font-awesome
 ```
 
 Start the server.
