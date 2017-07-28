@@ -23,9 +23,8 @@ app.engine('ejs', require('ejs').renderFile);
 app.set('view engine', 'ejs');
 
 
-
 // Custom flash middleware -- from Ethan Brown's book, 'Web Development with Node & Express'
-app.use(function(req, res, next){
+app.use(function (req, res, next) {
     // if there's a flash message in the session request, make it available in the response, then delete it
     res.locals.sessionFlash = req.session.sessionFlash;
     delete req.session.sessionFlash;
@@ -53,7 +52,7 @@ passport.use(new Strategy(
                 console.log("user password" + user.password + " pass:" + pass);
                 return cb(null, false);
             }
-           // sess.isLogin = true;
+            // sess.isLogin = true;
             //sess.user = user;
             return cb(null, user);
         });
@@ -75,7 +74,7 @@ passport.deserializeUser(function (id, cb) {
 app.get("/", loggedIn,
     require('connect-ensure-login').ensureLoggedIn(),
     function (req, res) {
-    //sess = req.session;
+        //sess = req.session;
         User.findAll({
             where: {
                 id: {
@@ -88,7 +87,7 @@ app.get("/", loggedIn,
                 users: users
             });
         });
-});
+    });
 
 app.get("/login", function (req, res) {
     if (req.isAuthenticated())

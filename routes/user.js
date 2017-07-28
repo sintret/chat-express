@@ -3,7 +3,7 @@ var tRoutes = function (app) {
     const model = require('./../models/User.js');
 
     app.get("/users", function (req, res) {
-        var limit = 3;
+        var limit = 50;
         var offset = 0;
         model.findAndCountAll()
             .then(function (data) {
@@ -17,7 +17,7 @@ var tRoutes = function (app) {
                         $sort: {id: 1}
                     })
                     .then(function (datas) {
-                        res.render('pages/users', {
+                        res.render('user/index', {
                             user: req.user,
                             results: datas,
                             count: pages,
@@ -30,14 +30,25 @@ var tRoutes = function (app) {
             });
 
     });
+
+    app.get('/user/create', function (req, res) {
+        res.render('user/create', {
+            user: req.user,
+            data: model.attributeData
+        });
+    });
+
+    app.post('/user/create', function (req, res) {
+
+    });
     
-    app.get('/user/create', function (req,res) {
+    var a = function (req,res,next) {
         
-    });
+    }
 
-    app.post('/user/create', function (req,res) {
-
-    });
+    app.get('/user/edit/:id', a);
+    app.post('/user/edit/:id', a);
+    app.delete('/user/delete/:id', a);
 
     app.get("/userList", function (req, res) {
         datatable(model, req.query, {}).then(function (result) {

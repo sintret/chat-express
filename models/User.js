@@ -5,7 +5,7 @@
 const Sequelize = require('sequelize');
 var sequelize = require('./config.js');
 
-var User = sequelize.define('user', {
+var attributeData = {
     username: {
         type: Sequelize.STRING,
         unique: true
@@ -31,6 +31,16 @@ var User = sequelize.define('user', {
     updatedAt: {
         type: Sequelize.DATE
     }
-});
+}
+var User = sequelize.define('user', attributeData);
 
+
+var obj = {};
+for (var property in attributeData) {
+    if (attributeData.hasOwnProperty(property)) {
+        // do stuff
+        obj.proprtyy = null;
+    }
+}
+User.attributeData = obj;
 module.exports = User;
