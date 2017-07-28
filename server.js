@@ -23,6 +23,15 @@ app.engine('ejs', require('ejs').renderFile);
 app.set('view engine', 'ejs');
 
 
+
+// Custom flash middleware -- from Ethan Brown's book, 'Web Development with Node & Express'
+app.use(function(req, res, next){
+    // if there's a flash message in the session request, make it available in the response, then delete it
+    res.locals.sessionFlash = req.session.sessionFlash;
+    delete req.session.sessionFlash;
+    next();
+});
+
 var sess;
 
 var User = require("./models/User.js");
@@ -89,7 +98,9 @@ app.get("/login", function (req, res) {
 });
 
 app.post('/login',
-    passport.authenticate('local', {failureRedirect: '/login'}),
+    passport.authenticate('local', {
+        failureRedirect: '/login'
+    }),
     function (req, res) {
         res.redirect('/');
     });
