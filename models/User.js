@@ -1,7 +1,3 @@
-/**
- * Created by ASUS-PC on 7/8/2017.
- */
-
 const Sequelize = require('sequelize');
 var sequelize = require('./config.js');
 
@@ -23,6 +19,9 @@ var attributeData = {
         type: Sequelize.STRING
     },
     roleId: {
+        type: Sequelize.INTEGER
+    },
+    status: {
         type: Sequelize.INTEGER
     },
     createdAt: {

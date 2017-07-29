@@ -3,6 +3,7 @@ var tRoutes = function (app) {
     const model = require('./../models/User.js');
     const fileUpload = require('express-fileupload');
     const hash = require('./../components/Hash.js');
+    const sharp = require('sharp');
     var fs = require('fs');
     app.use(fileUpload());
 
@@ -55,11 +56,19 @@ var tRoutes = function (app) {
             var imageName = milliseconds + sampleFile.name;
             photo = imageName;
 
+            var imageTo = __dirname + './../static/images/' + imageName;
+            var thumbTo = __dirname + './../static/images/thumb/' + imageName;
             // Use the mv() method to place the file somewhere on your server
-            sampleFile.mv(__dirname + './../static/images/' + imageName, function (err) {
+            sampleFile.mv(imageTo, function (err) {
                 if (err) {
                     return res.status(500).send(err);
                 } else {
+                    sharp(imageTo)
+                        .resize(200, 200)
+                        .toFile(thumbTo, function(err) {
+                            // output.jpg is a 200 pixels wide and 200 pixels high image
+                            // containing a scaled and cropped version of input.jpg
+                        });
                     var data = {
                         username: req.body.username,
                         fullname: req.body.fullname,

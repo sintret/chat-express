@@ -1,9 +1,12 @@
 <%
-
 dropdownRole =  ['', 'Admin', 'User', 'Client'];
+dropdownActive =  ['Non Active', 'Active'];
 
 getRoleName = function (id) {
     return dropdownRole[id];
+}
+getActiveName = function (id) {
+    return dropdownActive[id];
 }
 
 pagination = function (linkName, count, currentPage) {
