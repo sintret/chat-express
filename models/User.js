@@ -31,8 +31,9 @@ var attributeData = {
         type: Sequelize.DATE
     }
 }
-var User = sequelize.define('user', attributeData);
 
+//User singleton
+var User = sequelize.define('user', attributeData);
 
 var obj = {};
 for (var property in attributeData) {
@@ -41,5 +42,9 @@ for (var property in attributeData) {
         obj.proprtyy = null;
     }
 }
+
+//get attribute data
 User.attributeData = obj;
+
+
 module.exports = User;

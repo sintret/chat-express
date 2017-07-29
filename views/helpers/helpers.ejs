@@ -1,12 +1,23 @@
 <%
-dropdownRole =  ['', 'Admin', 'User', 'Client'];
-dropdownActive =  ['Non Active', 'Active'];
+dropdownRole = ['', 'Admin', 'User', 'Client'];
+dropdownActive = ['Non Active', 'Active'];
 
 getRoleName = function (id) {
     return dropdownRole[id];
 }
 getActiveName = function (id) {
     return dropdownActive[id];
+}
+
+showNotif = function (sessionFlash) {
+    var type = sessionFlash.type;
+    if (type == 'success') {
+        toastr.success(sessionFlash.message, sessionFlash.title, {timeOut: 5000});
+    } else if (type == 'error' || type == 'warning') {
+        toastr.warning(sessionFlash.message, sessionFlash.title, {timeOut: 5000});
+    }else{
+        toastr.info(sessionFlash.message, sessionFlash.title, {timeOut: 5000});
+    }
 }
 
 pagination = function (linkName, count, currentPage) {

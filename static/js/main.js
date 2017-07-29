@@ -26,3 +26,19 @@ $('.heading-dot').popover({
 $(function() {
     $('[data-toggle="popover"]').popover();
 });
+
+$( window ).load(function() {
+    // Run code
+    var notification = $(".notification-growl").html();
+    if(notification.length > 1){
+        var sessionFlash = JSON.parse(notification);
+        var type = sessionFlash.type;
+        if (type == 'success') {
+            toastr.success(sessionFlash.message, sessionFlash.title, {timeOut: 5000});
+        } else if (type == 'error' || type == 'warning') {
+            toastr.error(sessionFlash.message, sessionFlash.title, {timeOut: 5000});
+        }else{
+            toastr.info(sessionFlash.message, sessionFlash.title, {timeOut: 5000});
+        }
+    }
+});

@@ -19,8 +19,10 @@ app.use('/bower_components', express.static(path.join(__dirname, 'bower_componen
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.engine('ejs', require('ejs').renderFile);
-app.set('view engine', 'ejs');
+app.engine('.html', require('ejs').__express);
+app.set('view engine', 'html');
+//app.engine('ejs', require('ejs').renderFile);
+//app.set('view engine', 'ejs');
 
 
 // Custom flash middleware -- from Ethan Brown's book, 'Web Development with Node & Express'
@@ -42,7 +44,7 @@ passport.use(new Strategy(
 
         var pass = Hash.encrypt(password);
         User.findOne({
-            where: {username: username}
+            where: {username: username, status : 1}
         }).then(function (user) {
             console.log(JSON.stringify(user));
             if (!user) {

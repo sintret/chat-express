@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Super Chat</title>
+    <% include ../partials/main-head.html %>
+    <meta name="description" content="awesome super chat">
+    <meta name="author" content="sintret@gmail.com">
+</head>
+
+<body>
+
+<div class="container app app-grid">
+    <% include ../partials/menu_top.html %>
+
+    <div class="container">
+        <p>&nbsp;</p>
+        <div class="pull-right">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/users">Users</a></li>
+                <li class="breadcrumb-item active"><a href="#">Create</a></li>
+            </ol>
+        </div>
+
+        <% include ../helpers/helpers %>
+
+        <div class="page-header">
+            <h3>USER CREATE</h3>
+        </div>
+
+        <% include ../user/_form.html %>
+
+
+    </div>
+</div>
+<% include ../partials/main-footer.html %>
+
+</body>
+</html>

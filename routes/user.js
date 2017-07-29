@@ -43,19 +43,37 @@ var tRoutes = function (app) {
         });
     });
 
-    app.post('/user/create', function (req, res) {
+    var userCheck = function (req, res, next) {
+        username = req.body.username;
+        email = req.body.email;
+
+        model.count({
+            where: {
+                $or: [{username: username}, {email: email}]
+            }
+        }).then(function (count) {
+            if (count) {
+                req.session.sessionFlash = {
+                    type: 'warning',
+                    title: 'Create User Form',
+                    message: 'username or email has already taken!'
+                }
+                res.redirect('/user/create')
+            } else {
+                next();
+            }
+        });
+    }
+
+    app.post('/user/create', userCheck, function (req, res) {
         var today = new Date();
         var milliseconds = today.getMilliseconds();
         var photo = 'user.jpg';
 
-        if (!req.files) {
-            return res.status(400).send('No files were uploaded.');
-
-        } else {
+        if (req.files) {
             var sampleFile = req.files.photo;
             var imageName = milliseconds + sampleFile.name;
             photo = imageName;
-
             var imageTo = __dirname + './../static/images/' + imageName;
             var thumbTo = __dirname + './../static/images/thumb/' + imageName;
             // Use the mv() method to place the file somewhere on your server
@@ -64,8 +82,8 @@ var tRoutes = function (app) {
                     return res.status(500).send(err);
                 } else {
                     sharp(imageTo)
-                        .resize(200, 200)
-                        .toFile(thumbTo, function(err) {
+                        .resize(100, 100)
+                        .toFile(thumbTo, function (err) {
                             // output.jpg is a 200 pixels wide and 200 pixels high image
                             // containing a scaled and cropped version of input.jpg
                         });
@@ -84,7 +102,22 @@ var tRoutes = function (app) {
                     });
                 }
             });
+        } else {
+            var data = {
+                username: req.body.username,
+                fullname: req.body.fullname,
+                photo: photo,
+                roleId: req.body.roleId,
+                email: req.body.email,
+                password: hash.encrypt(req.body.password)
+            }
+
+            model.create(data).then(function (p) {
+                console.log(p);
+                res.redirect('/users');
+            });
         }
+
 
     });
 
