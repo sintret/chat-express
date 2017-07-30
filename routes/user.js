@@ -37,6 +37,8 @@ var tRoutes = function (app) {
     });
 
     app.get('/user/create', function (req, res) {
+        req.session.tForm = 'create';
+
         res.render('user/create', {
             user: req.user,
             data: model.attributeData
@@ -58,7 +60,7 @@ var tRoutes = function (app) {
                     title: 'Create User Form',
                     message: 'username or email has already taken!'
                 }
-                res.redirect('/user/create')
+                res.redirect('/user/' + req.session.tForm)
             } else {
                 next();
             }
@@ -69,8 +71,10 @@ var tRoutes = function (app) {
         var today = new Date();
         var milliseconds = today.getMilliseconds();
         var photo = 'user.jpg';
+        req.session.tForm = 'create';
 
-        if (req.files) {
+        if (req.files.hasOwnProperty('photo')) {
+
             var sampleFile = req.files.photo;
             var imageName = milliseconds + sampleFile.name;
             photo = imageName;
@@ -93,7 +97,8 @@ var tRoutes = function (app) {
                         photo: photo,
                         roleId: req.body.roleId,
                         email: req.body.email,
-                        password: hash.encrypt(req.body.password)
+                        password: hash.encrypt(req.body.password),
+                        status: req.body.status == 'on' ? 1 : 0
                     }
 
                     model.create(data).then(function (p) {
@@ -109,25 +114,119 @@ var tRoutes = function (app) {
                 photo: photo,
                 roleId: req.body.roleId,
                 email: req.body.email,
-                password: hash.encrypt(req.body.password)
+                password: hash.encrypt(req.body.password),
+                status: req.body.status == 'on' ? 1 : 0
             }
 
             model.create(data).then(function (p) {
                 console.log(p);
                 res.redirect('/users');
             });
+
         }
 
+    })
+
+    app.get('/user/update/:id', userCheck, function (req, res) {
+        req.session.tForm = 'update';
+
+        var id = req.params.id;
+
+        model.findById(id).then(function (m) {
+            res.render('user/update', {
+                user: req.user,
+                data: m
+            });
+        });
 
     });
 
-    var a = function (req, res, next) {
+    app.post('/user/update/:id', function (req, res) {
+        req.session.tForm = 'update';
+        var id = req.params.id;
 
-    }
+        console.log("status is : " + req.body.status);
 
-    app.get('/user/edit/:id', a);
-    app.post('/user/edit/:id', a);
-    app.delete('/user/delete/:id', a);
+        var today = new Date();
+        var milliseconds = today.getMilliseconds();
+        var photo = 'user.jpg';
+
+        console.log("files" + req.files);
+        if (req.files.hasOwnProperty('photo')) {
+            var sampleFile = req.files.photo;
+            var imageName = milliseconds + sampleFile.name;
+            photo = imageName;
+            var imageTo = __dirname + './../static/images/' + imageName;
+            var thumbTo = __dirname + './../static/images/thumb/' + imageName;
+            // Use the mv() method to place the file somewhere on your server
+            sampleFile.mv(imageTo, function (err) {
+                if (err) {
+                    return res.status(500).send(err);
+                } else {
+                    sharp(imageTo)
+                        .resize(100, 100)
+                        .toFile(thumbTo, function (err) {
+                            // output.jpg is a 200 pixels wide and 200 pixels high image
+                            // containing a scaled and cropped version of input.jpg
+                        });
+
+
+                    model.findById(id).then(function (user) {
+
+                        var data = {
+                            username: req.body.username,
+                            fullname: req.body.fullname,
+                            photo: photo,
+                            roleId: req.body.roleId,
+                            email: req.body.email,
+                            password: req.body.password == user.password ? req.body.password : hash.encrypt(req.body.password),
+                            status: req.body.status == 'on' ? 1 : 0
+                        }
+
+                        model.update(data, {where: {id: id}}).then(function (m) {
+                            console.log(m);
+                            res.redirect('/users');
+                        });
+                    });
+
+                }
+            });
+
+        } else {
+
+            model.findById(id).then(function (user) {
+
+                var data = {
+                    username: req.body.username,
+                    fullname: req.body.fullname,
+                    roleId: req.body.roleId,
+                    email: req.body.email,
+                    password: req.body.password == user.password ? req.body.password : hash.encrypt(req.body.password),
+                    status: req.body.status == 'on' ? 1 : 0
+                }
+
+                model.update(data, {where: {id: id}}).then(function (m) {
+                    console.log(m);
+                    res.redirect('/users');
+                });
+            });
+        }
+
+    });
+
+    app.delete('/user/delete/:id', function (req, res) {
+
+    });
+
+    app.get('/user/view/:id', function (req,res) {
+        var id = req.params.id;
+        model.findById(id).then(function (user) {
+            res.render('user/view', {
+                user: req.user,
+                data: user
+            });
+        })
+    })
 
     app.get("/userList", function (req, res) {
         datatable(model, req.query, {}).then(function (result) {

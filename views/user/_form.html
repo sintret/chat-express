@@ -1,5 +1,5 @@
 <% include ../helpers/helpers.ejs %>
-<form method="post" action="/user/create" enctype='multipart/form-data'>
+<form id="user-form" method="post" action="/user/<%= act; %>" enctype='multipart/form-data'>
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">
@@ -10,17 +10,18 @@
 
             <div class="form-group">
                 <label for="email">Email address</label>
-                <input type="email" <%= data.email %> class="form-control" name="email" id="email" placeholder="Email">
+                <input type="email" value="<%= data.email %>" class="form-control" name="email" id="email" required placeholder="Email">
             </div>
 
             <div class="form-group">
-                <label for="role">Role</label>
+                <label for="roleId">Role</label>
                 <select id="roleId" name="roleId" class="form-control">
-                    <% for (var i = 0; i < dropdownRole.length; i++) { if(i > 0) { %>
-                    <option value="<%= i %>"><%= dropdownRole[i] %></option>
+                    <% for (var i = 0; i < dropdownRole.length; i++) { if(i > 0) { var selectedVal = i==data.roleId ? 'selected':'';  %>
+                    <option value="<%= i %>"   <%= selectedVal;%> ><%= dropdownRole[i] %></option>
                     <% } } %>
                 </select>
             </div>
+
 
         </div>
 
@@ -35,7 +36,7 @@
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" <%= data.password %> class="form-control" name="password" id="password" placeholder="Password">
+                <input type="password" value="<%= data.password %>" class="form-control" name="password" id="password" placeholder="Password">
             </div>
 
             <div class="form-group has-success">
@@ -44,11 +45,19 @@
                 <p class="help-block"></p>
             </div>
 
+            <% var checked = data.status ==1 ? 'checked' : ''; %>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" <%= checked; %> name="status" > Active
+                </label>
+            </div>
+
+
         </div>
     </div>
 
 
-    <button type="submit" class="btn btn-success">Submit</button>
+    <button type="button" class="btn btn-success saveSubmit">Submit</button>
 </form>
 <div>
     &nbsp;

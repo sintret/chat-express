@@ -61,11 +61,11 @@
                 <td><%= dropdownActive[result.status] %></td>
                 <td><%= getRoleName(result.roleId) %></td>
                 <td>
-                    <a href="/user/id/<%= result.id %>"><i class="fa fa-pencil"></i> </a>
-                    &nbsp;&nbsp;&nbsp;
-                    <a href="/user/id/<%= result.id %>"><i class="fa fa-trash"></i> </a>
-                    &nbsp;&nbsp;&nbsp;
                     <a href="/user/view/<%= result.id %>"><i class="fa fa-eye" aria-hidden="true"></i> </a>
+                    &nbsp;&nbsp;&nbsp;
+                    <a href="/user/update/<%= result.id %>"><i class="fa fa-pencil"></i> </a>
+                    &nbsp;&nbsp;&nbsp;
+                    <a href="/user/delete/<%= result.id %>"><i class="fa fa-trash"></i> </a>
                 </td>
             </tr>
             <% no++; });} %>

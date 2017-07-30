@@ -26,13 +26,34 @@
         <div class="page-header">
             <h3>USER CREATE</h3>
         </div>
-
+        <% var act ='create'; %>
         <% include ../user/_form.html %>
 
 
     </div>
 </div>
 <% include ../partials/main-footer.html %>
+
+<script>
+    $(".saveSubmit").on("click", function () {
+        var fullname = $("#fullname").val();
+        var username = $("#username").val();
+        var password = $("#password").val();
+        if(fullname.length < 4){
+            alert("Fullname less than 4 chars");
+            return false;
+        }
+        if(username.length < 4){
+            alert("username less than 4 chars");
+            return false;
+        }
+        if(password.length < 4){
+            alert("password less than 4 chars");
+            return false;
+        }
+        $("#user-form").submit();
+    })
+</script>
 
 </body>
 </html>
