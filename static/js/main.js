@@ -42,3 +42,7 @@ $( window ).load(function() {
         }
     }
 });
+
+$(".profile-modal").on("click", function () {
+    $('#modal-profile').modal('show');
+});
