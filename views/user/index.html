@@ -65,7 +65,7 @@
                     &nbsp;&nbsp;&nbsp;
                     <a href="/user/update/<%= result.id %>"><i class="fa fa-pencil"></i> </a>
                     &nbsp;&nbsp;&nbsp;
-                    <a href="/user/delete/<%= result.id %>"><i class="fa fa-trash"></i> </a>
+                    <a class="trash-me" data-id="<%= result.id %>" href="#"><i class="fa fa-trash"></i> </a>
                 </td>
             </tr>
             <% no++; });} %>
@@ -78,6 +78,27 @@
     </div>
 </div>
 <% include ../partials/main-footer.html %>
+<script>
+    $(".trash-me").on("click", function (e) {
+        var $this = $(this);
+        if (window.confirm("are your sure to delete ?")) {
+            e.preventDefault();
+            $.ajax({
+                url: '/user/' + $(this).data('id'),
+                method: "DELETE",
+                dataType: "json",
+                success: function (json) {
+                    if (json.error) {
+                        toastr.warning(json.message, json.title, {timeOut: 5000});
+                    } else {
+                        $this.closest("tr").remove();
+                        toastr.success(json.message, json.title, {timeOut: 5000});
+                    }
+                }
+            })
+        }
 
+    })
+</script>
 </body>
 </html>

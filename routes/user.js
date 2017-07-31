@@ -16,11 +16,11 @@ var tRoutes = function (app) {
                 var pages = Math.ceil(data.count / limit);
                 offset = limit * (page - 1);
                 model.findAll({
-                        //attributes: ['id', 'first_name', 'last_name', 'date_of_birth'],
-                        limit: limit,
-                        offset: offset,
-                        $sort: {id: 1}
-                    })
+                    //attributes: ['id', 'first_name', 'last_name', 'date_of_birth'],
+                    limit: limit,
+                    offset: offset,
+                    $sort: {id: 1}
+                })
                     .then(function (datas) {
                         res.render('user/index', {
                             user: req.user,
@@ -214,11 +214,30 @@ var tRoutes = function (app) {
 
     });
 
-    app.delete('/user/delete/:id', function (req, res) {
+    app.delete('/user/:id', function (req, res) {
+        var id = req.params.id;
+        model.findById(id).then(function (user) {
+          if(user){
+              var json = {
+                  error: "",
+                  title: "Success to Delete User",
+                  message: "Success!"
+              };
+              user.destroy();
+              res.json(json);
+          }  else {
+              var json = {
+                  error: "User not known",
+                  title: "Failed to Delete User",
+                  message: "Please check your request again!"
+              };
+              res.json(json);
+          }
+        })
 
     });
 
-    app.get('/user/view/:id', function (req,res) {
+    app.get('/user/view/:id', function (req, res) {
         var id = req.params.id;
         model.findById(id).then(function (user) {
             res.render('user/view', {
