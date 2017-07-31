@@ -70,7 +70,7 @@ var tRoutes = function (app) {
     app.post('/user/create', userCheck, function (req, res) {
         var today = new Date();
         var milliseconds = today.getMilliseconds();
-        var photo = 'user.jpg';
+        var photo = 'user.png';
         req.session.tForm = 'create';
 
         if (req.files.hasOwnProperty('photo')) {
@@ -149,7 +149,7 @@ var tRoutes = function (app) {
 
         var today = new Date();
         var milliseconds = today.getMilliseconds();
-        var photo = 'user.jpg';
+        var photo = 'user.png';
 
         console.log("files" + req.files);
         if (req.files.hasOwnProperty('photo')) {

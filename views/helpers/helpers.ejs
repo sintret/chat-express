@@ -9,6 +9,18 @@ getActiveName = function (id) {
     return dropdownActive[id];
 }
 
+getStatusLabel = function(id){
+    var html = '';
+    if(id==1){
+        html +='<i class="glyphicon glyphicon-ok gi-2x text-success"></i>';
+    } else {
+        html += '<i class="glyphicon glyphicon-remove gi-2x text-warning"></i>';
+    }
+
+
+    return html;
+}
+
 showNotif = function (sessionFlash) {
     var type = sessionFlash.type;
     if (type == 'success') {

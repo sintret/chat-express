@@ -43,7 +43,7 @@
                 <th>Full Name</th>
                 <th>Email</th>
                 <th>Role</th>
-                <td>Status</td>
+                <th>Status</th>
                 <th>Action</th>
             </tr>
             </thead>
@@ -58,8 +58,8 @@
                 <td><%= result.username %></td>
                 <td><%= result.fullname %></td>
                 <td><%= result.email %></td>
-                <td><%= dropdownActive[result.status] %></td>
                 <td><%= getRoleName(result.roleId) %></td>
+                <td><%= dropdownActive[result.status] %></td>
                 <td>
                     <a href="/user/view/<%= result.id %>"><i class="fa fa-eye" aria-hidden="true"></i> </a>
                     &nbsp;&nbsp;&nbsp;
