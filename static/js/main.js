@@ -1,10 +1,10 @@
-var hideAllPopovers = function() {
-    $('.popover').each(function() {
+var hideAllPopovers = function () {
+    $('.popover').each(function () {
         $(this).popover('hide');
     });
 };
 
-$(document).on("click","#menu-profile", function () {
+$(document).on("click", "#menu-profile", function () {
     $(".side-two").show();
     $(".side-two").css({
         "left": "0"
@@ -12,7 +12,7 @@ $(document).on("click","#menu-profile", function () {
     hideAllPopovers();
 });
 
-$(document).on("click",".newMessage-back", function () {
+$(document).on("click", ".newMessage-back", function () {
     $(".side-two").hide();
     $(".side-two").css({
         "left": "0"
@@ -23,21 +23,21 @@ $('.heading-dot').popover({
     container: 'body'
 });
 
-$(function() {
+$(function () {
     $('[data-toggle="popover"]').popover();
 });
 
-$( window ).load(function() {
+$(window).load(function () {
     // Run code
     var notification = $(".notification-growl").html();
-    if(notification.length > 1){
+    if (notification.length > 1) {
         var sessionFlash = JSON.parse(notification);
         var type = sessionFlash.type;
         if (type == 'success') {
             toastr.success(sessionFlash.message, sessionFlash.title, {timeOut: 5000});
         } else if (type == 'error' || type == 'warning') {
             toastr.error(sessionFlash.message, sessionFlash.title, {timeOut: 5000});
-        }else{
+        } else {
             toastr.info(sessionFlash.message, sessionFlash.title, {timeOut: 5000});
         }
     }
@@ -45,4 +45,10 @@ $( window ).load(function() {
 
 $(".profile-modal").on("click", function () {
     $('#modal-profile').modal('show');
+});
+
+$.fn.editable.defaults.mode = 'inline';
+
+$(document).ready(function () {
+    $('#modal-fullname').editable();
 });

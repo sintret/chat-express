@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style type="text/css">
+        .under {
+            position: absolute;
+            bottom: 200px;
+            right: 200px;
+        }
+        #container {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            pointer-events: none;
+        }
+        .chat {
+            border: 1px solid #999;
+            display: inline-block;
+            vertical-align: bottom;
+            position: relative;
+            margin: 0 5px;
+            pointer-events: auto;
+        }
+        .title {
+            padding: 0.5em;
+            background-color: blue;
+            color: white;
+        }
+        .text {
+            padding: 10px;
+        }
+    </style>
+    <title>Title</title>
+</head>
+<body>
+
+<div class="under">
+    <input type="text" value="select me!" />
+</div>
+
+<div id="container">
+    <div class="chat">
+        <div class="title">This is the chat title</div>
+        <div class="text">
+            <p>Text 1</p>
+            <p>Text 2</p>
+            <p>Text 3</p>
+        </div>
+        <div class="chatbox">
+            <input type="text" />
+        </div>
+    </div>
+    <div class="chat">
+        <div class="title">This is the chat title</div>
+        <div class="text" style="height:250px">
+            <p>Text 1</p>
+            <p>Text 2</p>
+            <p>Text 3</p>
+        </div>
+        <div class="chatbox">
+            <input type="text" />
+        </div>
+    </div>
+</div>
+</body>
+</html>

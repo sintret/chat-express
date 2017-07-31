@@ -39,12 +39,23 @@ var obj = {};
 for (var property in attributeData) {
     if (attributeData.hasOwnProperty(property)) {
         // do stuff
-        obj.proprtyy = null;
+        obj.property = null;
     }
 }
 
 //get attribute data
 User.attributeData = obj;
 
+User.updateSQL = function (tArray, callback) {
+
+    callback = callback || function () {}
+
+    return new Promise( function (resolve,reject) {
+        sequelize.query("UPDATE user SET "+tArray[0]+" = '"+tArray[1]+"' WHERE id = "+tArray[2]).spread(function (result,metadata) {
+            resolve(metadata);
+            return callback(null,metadata);
+        });
+    });
+};
 
 module.exports = User;

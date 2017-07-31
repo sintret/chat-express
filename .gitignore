@@ -9,6 +9,8 @@ bower_components
 nbproject
 /nbproject
 
+static/images
+
 # IDE Files
 #-------------------------/
 .idea
