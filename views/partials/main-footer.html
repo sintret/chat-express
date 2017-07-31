@@ -2,7 +2,17 @@
 <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/bower_components/toastr/toastr.min.js"></script>
 <script src="/static/editable/js/bootstrap-editable.min.js"></script>
+<script>
+    var l = 'http://localhost:3001';
+    var s = 'http://sintret.com:3001';
 
+    var socket = io(l);
+    //var socket = io('http://localhost:3001');
+    socket.on('news', function (data) {
+        console.log(data);
+        socket.emit('my other event', { my: 'data' });
+    });
+</script>
 <% include ../helpers/helpers %>
 <% include ../partials/modal-profile.html %>
 <script src="/static/js/main.js"></script>

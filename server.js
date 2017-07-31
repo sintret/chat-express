@@ -5,9 +5,11 @@ var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
 var session = require('express-session');
 
-app.listen(3001, function () {
-    console.log("express running on port 3001");
-});
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+var port =3001;
+var io = require('socket.io').listen(app.listen(port));
+
 
 app.use(require('body-parser').urlencoded({extended: true}));
 app.set('trust proxy', 1); // trust first proxy
@@ -139,3 +141,11 @@ function loggedIn(req, res, next) {
 }
 
 require('./routes/user.js')(app);
+
+io.on('connection', function (socket) {
+    console.log("socket connected on port " + port);
+    socket.emit('news', { hello: 'world' });
+    socket.on('my other event', function (data) {
+        console.log(data);
+    });
+});
