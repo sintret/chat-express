@@ -35,6 +35,9 @@ app.use(function (req, res, next) {
     // if there's a flash message in the session request, make it available in the response, then delete it
     res.locals.sessionFlash = req.session.sessionFlash;
     delete req.session.sessionFlash;
+
+    res.locals.sessionFlashc = req.session.sessionFlashc;
+
     next();
 });
 
@@ -59,6 +62,43 @@ var User = require("./models/User.js");
 var Hash = require("./components/Hash.js");
 
 passport.use(new Strategy(
+    {usernameField: 'username',passwordField: 'password', passReqToCallback: true},
+    function(req, username, password, cb) {
+        // now you can check req.body.foo
+        console.log(password);
+
+        var pass = Hash.encrypt(password);
+        User.findOne({
+            where: {username: username, status: 1}
+        }).then(function (user) {
+            console.log(JSON.stringify(user));
+            if (!user) {
+                req.session.sessionFlashc = 1;
+                return cb(null, false);
+            }
+            if (user.password != pass) {
+                req.session.sessionFlashc = 1;
+                console.log("user password" + user.password + " pass:" + pass);
+                return cb(null, false);
+            }
+
+            var a = socketArray.indexOf(user.id);
+            if (a >= 0) {
+                req.session.sessionFlashc = 2;
+                return cb(null, false);
+            }
+
+            socketArray.push(user.id);
+            io.engine.generateId = function (req, res) {
+                return user.id; // custom id must be unique
+            }
+            return cb(null, user);
+        });
+    }
+));
+/*
+
+passport.use(new Strategy(
     function (username, password, cb) {
         console.log(password);
 
@@ -68,14 +108,17 @@ passport.use(new Strategy(
         }).then(function (user) {
             var a = socketArray.indexOf(user.id);
             if (a >= 0) {
+                sess.sessionFlash = 2;
                 return cb(null, false);
             }
 
             console.log(JSON.stringify(user));
             if (!user) {
+                sess.sessionFlashc = 1;
                 return cb(null, false);
             }
             if (user.password != pass) {
+                sess.sessionFlashc = 1;
                 console.log("user password" + user.password + " pass:" + pass);
                 return cb(null, false);
             }
@@ -83,11 +126,10 @@ passport.use(new Strategy(
             io.engine.generateId = function (req, res) {
                 return user.id; // custom id must be unique
             }
-            // sess.isLogin = true;
-            //sess.user = user;
             return cb(null, user);
         });
     }));
+*/
 
 passport.serializeUser(function (user, cb) {
     cb(null, user);
@@ -101,9 +143,9 @@ passport.deserializeUser(function (user, cb) {
 });
 
 app.get("/", loggedIn,
+
     require('connect-ensure-login').ensureLoggedIn(),
     function (req, res) {
-        //sess = req.session;
         User.findAll({
             where: {
                 id: {
@@ -121,17 +163,43 @@ app.get("/", loggedIn,
     });
 
 app.get("/login", function (req, res) {
+    //sess = req.session;
+
+    console.log("SESSION"+JSON.stringify(req.session));
     if (req.isAuthenticated())
         res.redirect('/');
     else
-        res.render('pages/login', {data: {page_name: "login"}});
+        res.render('pages/login', {data: {page_name: "login"}, sessionFlashc:req.session.sessionFlashc});
 });
 
 app.post('/login',
     passport.authenticate('local', {
-        failureRedirect: '/login?error=true'
+        failureRedirect: '/login'
     }),
     function (req, res) {
+        /*var username = req.body.username;
+
+         console.log(username);
+
+         User.findOne({
+         where: {username: username, status: 1}
+         }).then( function (user) {
+         if(!user){
+         res.redirect('/login?error=1');
+         } else {
+         var a = socketArray.indexOf(user.id);
+         if (a >= 0) {
+         var index = socketArray.indexOf(req.user.id);
+         socketArray.splice(index, 1);
+         console.log("socket logout  " + socketArray);
+
+         req.logout();
+
+         res.redirect('/login?error=2');
+         }
+         }
+         });
+         */
         res.redirect('/');
     });
 
@@ -190,7 +258,7 @@ require('./routes/user.js')(app, isAdmin);
 io.on('connection', function (socket) {
     console.log("socket connected on port " + port);
     console.log("socket id  " + socket.id);
-    console.log("socket aray  " + JSON.stringify(socketArray));
+    console.log("socket array  " + JSON.stringify(socketArray));
 
     io.sockets.emit('onlines', {data: socketArray});
 

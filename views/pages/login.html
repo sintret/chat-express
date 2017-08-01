@@ -15,9 +15,20 @@
 
     <div class="card card-container">
         <h1 style="color: darkviolet" class="text-center">Super Chat</h1>
+
         <!-- <img class="profile-img-card" src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120" alt="" /> -->
         <img id="profile-img" class="profile-img-card" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"/>
         <p id="profile-name" class="profile-name-card"></p>
+        <% if(sessionFlashc==1) { %>
+        <div class="alert alert-danger" id="wrong1" role="alert">
+            Username or password <strong> is Wrong!</strong>
+        </div>
+        <% } %>
+        <% if(sessionFlashc==2) { %>
+        <div class="alert alert-danger" id="wrong2" role="alert">
+           Your username is correct but your username <strong> is used and got online!</strong>
+        </div>
+        <% } %>
         <form class="form-signin" method="post" action="/login">
             <span id="reauth-email" class="reauth-email"></span>
             <input type="text" id="inputEmail" class="form-control" placeholder="Your Username" name="username" required
@@ -37,6 +48,30 @@
     </div><!-- /card-container -->
 </div><!-- /container -->
 <% include ../partials/footer.html %>
+<script>
+    var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
 
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : sParameterName[1];
+            }
+        }
+    };
+    var tError = getUrlParameter('error');
+
+    if (tError == 1) {
+        $("#wrong1").show();
+    }
+    if (tError == 2) {
+        $("#wrong2").show();
+    }
+
+</script>
 </body>
 </html>
