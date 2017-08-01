@@ -6,14 +6,20 @@ var Strategy = require('passport-local').Strategy;
 var session = require('express-session');
 
 var server = require('http').createServer(app);
-var io = require('socket.io')(server);
-var port =3001;
+var socket = require('socket.io');
+var io = socket(server);
+var port = 3001;
 var io = require('socket.io').listen(app.listen(port));
 
 
 app.use(require('body-parser').urlencoded({extended: true}));
 app.set('trust proxy', 1); // trust first proxy
-app.use(require('express-session')({secret: 'keybfgdgfdcat', resave: false, saveUninitialized: false}));
+app.use(session({
+    secret: 'projectchatok',
+    resave: true,
+    saveUninitialized: true,
+    cookie: {maxAge: 2 * 24 * 60 * 60 * 1000, httpOnly: false}
+}));
 
 app.use("/static", express.static(path.join(__dirname, "static")));
 app.use('/bower_components', express.static(path.join(__dirname, 'bower_components')));
@@ -33,6 +39,7 @@ app.use(function (req, res, next) {
 });
 
 var sess;
+var socketArray = [];
 
 var User = require("./models/User.js");
 var Hash = require("./components/Hash.js");
@@ -45,6 +52,12 @@ passport.use(new Strategy(
         User.findOne({
             where: {username: username, status: 1}
         }).then(function (user) {
+            var a = socketArray.indexOf(user.id);
+            if (a >= 0) {
+                return cb(null, false);
+            }
+
+
             console.log(JSON.stringify(user));
             if (!user) {
                 return cb(null, false);
@@ -52,6 +65,10 @@ passport.use(new Strategy(
             if (user.password != pass) {
                 console.log("user password" + user.password + " pass:" + pass);
                 return cb(null, false);
+            }
+            socketArray.push(user.id);
+            io.engine.generateId = function (req, res) {
+                return user.id; // custom id must be unique
             }
             // sess.isLogin = true;
             //sess.user = user;
@@ -91,6 +108,9 @@ app.get("/", loggedIn,
     });
 
 app.get("/login", function (req, res) {
+
+   // var e = req.params.error;
+   // console.log("error " + e);
     if (req.isAuthenticated())
         res.redirect('/');
     else
@@ -99,7 +119,7 @@ app.get("/login", function (req, res) {
 
 app.post('/login',
     passport.authenticate('local', {
-        failureRedirect: '/login'
+        failureRedirect: '/login?error=true'
     }),
     function (req, res) {
         res.redirect('/');
@@ -107,6 +127,10 @@ app.post('/login',
 
 app.get('/logout',
     function (req, res) {
+        var index = socketArray.indexOf(req.user.id);
+        socketArray.splice(index, 1);
+        console.log("socket logut  " + socketArray);
+
         req.logout();
         res.redirect('/');
     });
@@ -143,9 +167,9 @@ function loggedIn(req, res, next) {
 require('./routes/user.js')(app);
 
 io.on('connection', function (socket) {
+    var sessionId = socket.id;
     console.log("socket connected on port " + port);
-    socket.emit('news', { hello: 'world' });
-    socket.on('my other event', function (data) {
-        console.log(data);
-    });
+    console.log("socket id  " + socket.id);
+    console.log("socket aray  " + socketArray);
+
 });

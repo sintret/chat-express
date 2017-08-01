@@ -8,6 +8,7 @@ var tRoutes = function (app) {
     app.use(fileUpload());
 
     app.get("/users", function (req, res) {
+        console.log(JSON.stringify(req.user));
         var limit = 50;
         var offset = 0;
         model.findAndCountAll()
