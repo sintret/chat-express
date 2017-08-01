@@ -57,7 +57,6 @@ passport.use(new Strategy(
                 return cb(null, false);
             }
 
-
             console.log(JSON.stringify(user));
             if (!user) {
                 return cb(null, false);
@@ -108,9 +107,6 @@ app.get("/", loggedIn,
     });
 
 app.get("/login", function (req, res) {
-
-   // var e = req.params.error;
-   // console.log("error " + e);
     if (req.isAuthenticated())
         res.redirect('/');
     else
@@ -172,4 +168,12 @@ io.on('connection', function (socket) {
     console.log("socket id  " + socket.id);
     console.log("socket aray  " + socketArray);
 
+    io.sockets.emit('onlines', { data: socketArray});
+
+    socket.on('disconnect', function () {
+        console.log("socket left  ");
+        var index = socketArray.indexOf(socket.id);
+        socketArray.splice(index, 1);
+        io.sockets.emit('onlines', { data: socketArray});
+    });
 });

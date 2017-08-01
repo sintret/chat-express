@@ -10,6 +10,7 @@
 </head>
 
 <body>
+<span class="notification-growl" style="display:none"><% if(sessionFlash){%><%= JSON.stringify(sessionFlash); %><%}%></span>
 
 <div class="container app">
     <div class="row app-one">
@@ -52,7 +53,7 @@
                     <% if(users.length) { %>
                     <% users.forEach(function(result) { %>
 
-                    <div class="row sideBar-body">
+                    <div class="row sideBar-body" data-id="<%= result.id; %>" data-username="<%= result.username; %>" data-photo="<%= result.photo; %>"  >
                         <div class="col-sm-3 col-xs-3 sideBar-avatar">
                             <div class="avatar-icon">
                                 <img src="/static/images/thumb/<%= result.photo %>">
@@ -62,8 +63,7 @@
                             <div class="row">
                                 <div class="col-sm-8 col-xs-8 sideBar-name"><span class="name-meta"><%= result.fullname %></span>
                                 </div>
-                                <div class="col-sm-4 col-xs-4 pull-right sideBar-time"><span
-                                        class="time-meta pull-right text-success">terhubung</span></div>
+                                <div class="col-sm-4 col-xs-4 pull-right sideBar-time"><span id="online<%= result.id; %>" class="online-meta pull-right heading-compose">connected</span></div>
                             </div>
                         </div>
                     </div>
@@ -107,16 +107,17 @@
         <!-- Conversation Start -->
         <div class="col-sm-8 conversation">
             <!-- Heading -->
-            <div class="row heading">
+            <div class="row heading avatar-place">
                 <div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
                     <div class="heading-avatar-icon">
-                        <img src="/static/img/b.jpg">
+                        <img src="/static/images/thumb/b.jpg" title="test satu">
+                        <a class="heading-name-meta">Test cc Satu</a>
                     </div>
                 </div>
-                <div class="col-sm-8 col-xs-7 heading-name">
-                    <a class="heading-name-meta">Test Satu</a>
+               <!-- <div class="col-sm-8 col-xs-7 heading-name">
+                    <a class="heading-name-meta">Test cc Satu</a>
                     <span class="heading-online">Online</span>
-                </div>
+                </div>-->
 
             </div>
             <!-- Heading End -->
@@ -185,8 +186,7 @@
 
 </div>
 <% include ../partials/main-footer.html %>
-
-
+<script src="/static/js/chat.js"></script>
 <!-- App End -->
 </body>
 

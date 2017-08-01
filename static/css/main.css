@@ -68,9 +68,7 @@ body {
     left: -100%;
     -webkit-transition: left 0.3s ease;
     transition: left 0.3s ease;
-
 }
-
 
 .heading {
     padding: 10px 16px 10px 15px;
@@ -230,6 +228,22 @@ body {
     vertical-align: baseline;
 }
 
+.online-meta {
+    text-align: right;
+    font-size: 12px;
+    padding: 1% !important;
+    color: #5cb85c;
+    vertical-align: baseline;
+}
+
+.offline-meta {
+    text-align: right;
+    font-size: 12px;
+    padding: 1% !important;
+    color: #d9534f;
+    vertical-align: baseline;
+}
+
 /*New Message*/
 
 .newMessage {
@@ -377,6 +391,10 @@ body {
     text-align: right;
     color: #9a9a9a;
 
+}
+
+.grey {
+    background-color: #eeeeea;
 }
 
 .receiver {

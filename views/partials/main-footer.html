@@ -8,9 +8,10 @@
 
     var socket = io(l);
     //var socket = io('http://localhost:3001');
-    socket.on('news', function (data) {
-        console.log(data);
-        socket.emit('my other event', { my: 'data' });
+    socket.on('onlines', function (data) {
+        for (var i = 0; i < data.length; i++) {
+            $("#online"+data[i]).html();
+        }
     });
 </script>
 <% include ../helpers/helpers %>
