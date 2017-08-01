@@ -38,6 +38,20 @@ app.use(function (req, res, next) {
     next();
 });
 
+app.use(function (req, res, next) {
+    if (req.isAuthenticated()) {
+        res.locals.tUserId = req.user.id;
+        res.locals.roleId = req.user.roleId;
+        req.session.id = req.user.id;
+    } else {
+        res.locals.tUserId = 0;
+        res.locals.roleId = 0;
+        req.session.id = null;
+    }
+
+    next();
+});
+
 var sess;
 var socketArray = [];
 
@@ -76,16 +90,14 @@ passport.use(new Strategy(
     }));
 
 passport.serializeUser(function (user, cb) {
-    cb(null, user.id);
+    cb(null, user);
 });
 
-passport.deserializeUser(function (id, cb) {
-    User.findById(id).then(function (user) {
-        if (!user) {
-            return cb(err);
-        }
-        cb(null, user);
-    });
+passport.deserializeUser(function (user, cb) {
+    if (!user) {
+        return cb(err);
+    }
+    return cb(null, user);
 });
 
 app.get("/", loggedIn,
@@ -104,6 +116,8 @@ app.get("/", loggedIn,
                 users: users
             });
         });
+
+        console.log("JSON IS : " + JSON.stringify(req.session));
     });
 
 app.get("/login", function (req, res) {
@@ -123,11 +137,14 @@ app.post('/login',
 
 app.get('/logout',
     function (req, res) {
-        var index = socketArray.indexOf(req.user.id);
-        socketArray.splice(index, 1);
-        console.log("socket logut  " + socketArray);
+        if (req.isAuthenticated()) {
+            var index = socketArray.indexOf(req.user.id);
+            socketArray.splice(index, 1);
+            console.log("socket logout  " + socketArray);
 
-        req.logout();
+            req.logout();
+        }
+
         res.redirect('/');
     });
 
@@ -136,7 +153,7 @@ app.get('/test',
         res.render('pages/test');
     });
 
-app.post('/post', function (req, res) {
+app.post('/post', loggedIn, function (req, res) {
     var pk = req.body.pk;
     var value = req.body.value;
 
@@ -160,20 +177,27 @@ function loggedIn(req, res, next) {
     }
 }
 
-require('./routes/user.js')(app);
+var isAdmin = function (req, res, next) {
+    if (req.user.roleId == 1) {
+        next();
+    } else {
+        res.redirect('/');
+    }
+}
+
+require('./routes/user.js')(app, isAdmin);
 
 io.on('connection', function (socket) {
-    var sessionId = socket.id;
     console.log("socket connected on port " + port);
     console.log("socket id  " + socket.id);
     console.log("socket aray  " + JSON.stringify(socketArray));
 
-    io.sockets.emit('onlines', { data: socketArray});
+    io.sockets.emit('onlines', {data: socketArray});
 
     socket.on('disconnect', function () {
         console.log("socket left  ");
         var index = socketArray.indexOf(socket.id);
         socketArray.splice(index, 1);
-        io.sockets.emit('onlines', { data: socketArray});
+        io.sockets.emit('onlines', {data: socketArray});
     });
 });

@@ -1,4 +1,4 @@
-var tRoutes = function (app) {
+var tRoutes = function (app, isAdmin) {
     const datatable = require('sequelize-datatables');
     const model = require('./../models/User.js');
     const fileUpload = require('express-fileupload');
@@ -7,7 +7,7 @@ var tRoutes = function (app) {
     var fs = require('fs');
     app.use(fileUpload());
 
-    app.get("/users", function (req, res) {
+    app.get("/users",isAdmin, function (req, res) {
         console.log(JSON.stringify(req.user));
         var limit = 50;
         var offset = 0;
@@ -37,7 +37,7 @@ var tRoutes = function (app) {
 
     });
 
-    app.get('/user/create', function (req, res) {
+    app.get('/user/create',isAdmin, function (req, res) {
         req.session.tForm = 'create';
 
         res.render('user/create', {
@@ -68,7 +68,7 @@ var tRoutes = function (app) {
         });
     }
 
-    app.post('/user/create', userCheck, function (req, res) {
+    app.post('/user/create', userCheck, isAdmin,function (req, res) {
         var today = new Date();
         var milliseconds = today.getMilliseconds();
         var photo = 'user.png';
@@ -128,7 +128,7 @@ var tRoutes = function (app) {
 
     })
 
-    app.get('/user/update/:id', userCheck, function (req, res) {
+    app.get('/user/update/:id', userCheck,isAdmin, function (req, res) {
         req.session.tForm = 'update';
 
         var id = req.params.id;
@@ -142,7 +142,7 @@ var tRoutes = function (app) {
 
     });
 
-    app.post('/user/update/:id', function (req, res) {
+    app.post('/user/update/:id',isAdmin, function (req, res) {
         req.session.tForm = 'update';
         var id = req.params.id;
 
@@ -215,7 +215,7 @@ var tRoutes = function (app) {
 
     });
 
-    app.delete('/user/:id', function (req, res) {
+    app.delete('/user/:id',isAdmin, function (req, res) {
         var id = req.params.id;
         model.findById(id).then(function (user) {
           if(user){
@@ -238,7 +238,7 @@ var tRoutes = function (app) {
 
     });
 
-    app.get('/user/view/:id', function (req, res) {
+    app.get('/user/view/:id',isAdmin, function (req, res) {
         var id = req.params.id;
         model.findById(id).then(function (user) {
             res.render('user/view', {
@@ -248,7 +248,7 @@ var tRoutes = function (app) {
         })
     })
 
-    app.get("/userList", function (req, res) {
+    app.get("/userList",isAdmin, function (req, res) {
         datatable(model, req.query, {}).then(function (result) {
             res.json(result);
         });
