@@ -166,7 +166,7 @@ io.on('connection', function (socket) {
     var sessionId = socket.id;
     console.log("socket connected on port " + port);
     console.log("socket id  " + socket.id);
-    console.log("socket aray  " + socketArray);
+    console.log("socket aray  " + JSON.stringify(socketArray));
 
     io.sockets.emit('onlines', { data: socketArray});
 
