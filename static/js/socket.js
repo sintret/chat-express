@@ -5,9 +5,14 @@ var socket = io(l);
 socket.on('onlines', function (datas) {
     var data = datas.data;
 
+    console.log("onlines : "+JSON.stringify(data));
+
     $(".sideBar-body").each(function () {
-        var id = $(this).data("id");
-        var a = data.indexOf(id);
+        var $this = $(this);
+        var id = $this.data("id");
+        var u = $this.data("u");
+
+        var a = data.indexOf(u);
         if (a >= 0) {
             $("#online"+id).removeClass( "offline-meta" );
             $("#online"+id).html("online");

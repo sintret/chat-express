@@ -55,7 +55,7 @@
                     <% if(users.length) { %>
                     <% users.forEach(function(result) { %>
 
-                    <div class="row sideBar-body" data-id="<%= result.id; %>" data-username="<%= result.username; %>" data-photo="<%= result.photo; %>"  >
+                    <div class="row sideBar-body" data-id="<%= result.id; %>" data-u="user<%= result.id; %>" data-username="<%= result.username; %>" data-photo="<%= result.photo; %>"  >
                         <div class="col-sm-3 col-xs-3 sideBar-avatar">
                             <div class="avatar-icon">
                                 <img src="/static/images/thumb/<%= result.photo %>">

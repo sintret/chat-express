@@ -8,8 +8,10 @@ const sharp = require('sharp');
 
 const socket = require('socket.io');
 const port = 3001;
-const io = socket.listen(app.listen(port));
+const io = socket(app.listen(port));
 const SocketIOFile = require('socket.io-file');
+
+//app.listen(port);
 
 app.set('trust proxy', 1); // trust first proxy
 
@@ -57,7 +59,6 @@ app.use(function (req, res, next) {
     next();
 });
 
-var sess;
 var socketArray = [];
 
 var User = require("./models/User.js");
@@ -87,7 +88,9 @@ passport.use(new Strategy(
             req.session.user = user;
             req.session.userId = user.id;
 
-            var a = socketArray.indexOf(user.id);
+            var userid = 'user'+user.id;
+
+            var a = socketArray.indexOf(userid);
             if (a >= 0) {
                 req.session.sessionFlashc = 2;
                 return cb(null, false);
@@ -95,7 +98,7 @@ passport.use(new Strategy(
 
             socketArray.push(user.id);
             io.engine.generateId = function (req, res) {
-                return user.id; // custom id must be unique
+                return userid; // custom id must be unique
             }
             return cb(null, user);
         });
@@ -201,40 +204,21 @@ var isAdmin = function (req, res, next) {
         res.redirect('/');
     }
 }
-app.get('/socket.io-file-client.js', isAdmin, function (req, res, next) {
+app.get('/socket.io-file-client.js', function (req, res, next) {
     return res.sendFile(__dirname + '/node_modules/socket.io-file-client/socket.io-file-client.js');
 });
 
 io.on('connection', function (socket) {
 
-    /* var a = socketArray.indexOf(session.userId);
-     if (a <= 0) {
-     socketArray.push(socketSession.user.id);
-     }
-     */
-
-  /*
-  session(socket.handshake, {}, function (err) {
-        if (err) { /!* handle error *!/ }
-        var session = socket.handshake.session;
-        // do stuff
-
-        // alter session
-        session.userdata = mydata
-
-        // and save session
-        session.save(function (err) { /!* handle error *!/ })
-    });
-    */
-
-
-
+    var allConnectedClients = Object.keys(io.sockets.connected);
+    socketArray = allConnectedClients;
 
     console.log("socket connected on port " + port);
     console.log("socket id  " + socket.id);
-    console.log("socket array  " + JSON.stringify(socketArray));
+    console.log("socket allConnectedClients  " + JSON.stringify(allConnectedClients));
+    console.log("socket socketArray  " + JSON.stringify(socketArray));
 
-    io.sockets.emit('onlines', {data: socketArray});
+    io.emit('onlines', {data: socketArray});
 
     socket.on('disconnect', function () {
         console.log("socket left  ");
@@ -276,16 +260,20 @@ io.on('connection', function (socket) {
         var tArray = {photo: fileInfo.name};
 
         session(socket.handshake, {}, function (err) {
-            if (err) { /!* handle error *!/ }
+            if (err) {
+                /!* handle error *!/
+            }
             var session = socket.handshake.session;
             // do stuff
 
-            User.findOne({id:session.userId}).then(function (user) {
+            User.findOne({id: session.userId}).then(function (user) {
                 user.updateAttributes({
-                    photo:fileInfo.name
+                    photo: fileInfo.name
                 });
                 session.user = user;
-                session.save(function (err) { console.log("error save"+err)})
+                session.save(function (err) {
+                    console.log("error save" + err)
+                })
 
             });
             /*
