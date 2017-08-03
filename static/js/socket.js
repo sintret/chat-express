@@ -29,15 +29,23 @@ socket.on('onlines', function (datas) {
 });
 
 var uploader = new SocketIOFileClient(socket);
-var form = document.getElementById('form');
+var form = document.getElementById('modal-form');
 
 uploader.on('start', function(fileInfo) {
     console.log('Start uploading', fileInfo);
 });
 uploader.on('stream', function(fileInfo) {
-    console.log('Streaming... sent ' + fileInfo.sent + ' bytes.');
+    var t = (fileInfo.sent / fileInfo.size) * 100 +'%';
+    $(".progress-bar").css( "width", t );
+    $(".progress-bar").html(t);
 });
 uploader.on('complete', function(fileInfo) {
+    $(".progress-bar").css( "width", '100%' );
+    $(".progress-bar").html('100%');
+    var photo = '/static/images/thumb/'+fileInfo.name;
+
+    setTimeout(function(){ $("#modal-image").attr('src',photo); }, 1000);
+
     console.log('Upload Complete', fileInfo);
 });
 uploader.on('error', function(err) {
@@ -50,11 +58,6 @@ uploader.on('abort', function(fileInfo) {
 form.onsubmit = function(ev) {
     ev.preventDefault();
 
-    var fileEl = document.getElementById('file');
+    var fileEl = document.getElementById('modal-file');
     var uploadIds = uploader.upload(fileEl);
-
-    // setTimeout(function() {
-    // uploader.abort(uploadIds[0]);
-    // console.log(uploader.getUploadInfo());
-    // }, 1000);
 };

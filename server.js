@@ -3,7 +3,7 @@ const app = express();
 const path = require("path");
 const passport = require('passport');
 var Strategy = require('passport-local').Strategy;
-var session = require('express-session');
+var expressSession = require('express-session');
 const sharp = require('sharp');
 
 const socket = require('socket.io');
@@ -11,19 +11,21 @@ const port = 3001;
 const io = socket.listen(app.listen(port));
 const SocketIOFile = require('socket.io-file');
 
-
-app.use(require('body-parser').urlencoded({extended: true}));
 app.set('trust proxy', 1); // trust first proxy
-app.use(session({
+
+
+var session = expressSession({
     secret: 'projectchatok',
     resave: true,
     saveUninitialized: true,
     cookie: {maxAge: 2 * 24 * 60 * 60 * 1000, httpOnly: false}
-}));
+});
+
 
 app.use("/static", express.static(path.join(__dirname, "static")));
 app.use('/bower_components', express.static(path.join(__dirname, 'bower_components')));
-
+app.use(require('body-parser').urlencoded({extended: true}));
+app.use(session)
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -82,6 +84,9 @@ passport.use(new Strategy(
                 return cb(null, false);
             }
 
+            req.session.user = user;
+            req.session.userId = user.id;
+
             var a = socketArray.indexOf(user.id);
             if (a >= 0) {
                 req.session.sessionFlashc = 2;
@@ -120,7 +125,7 @@ app.get("/", loggedIn,
             }
         }).then(function (users) {
             res.render('pages/index', {
-                user: req.user,
+                user: req.session.user,
                 users: users
             });
         });
@@ -153,6 +158,7 @@ app.get('/logout',
             socketArray.splice(index, 1);
             console.log("socket logout  " + socketArray);
 
+            req.session.user = null;
             req.logout();
         }
 
@@ -198,9 +204,32 @@ var isAdmin = function (req, res, next) {
 app.get('/socket.io-file-client.js', isAdmin, function (req, res, next) {
     return res.sendFile(__dirname + '/node_modules/socket.io-file-client/socket.io-file-client.js');
 });
-require('./routes/user.js')(app, isAdmin);
 
 io.on('connection', function (socket) {
+
+    /* var a = socketArray.indexOf(session.userId);
+     if (a <= 0) {
+     socketArray.push(socketSession.user.id);
+     }
+     */
+
+  /*
+  session(socket.handshake, {}, function (err) {
+        if (err) { /!* handle error *!/ }
+        var session = socket.handshake.session;
+        // do stuff
+
+        // alter session
+        session.userdata = mydata
+
+        // and save session
+        session.save(function (err) { /!* handle error *!/ })
+    });
+    */
+
+
+
+
     console.log("socket connected on port " + port);
     console.log("socket id  " + socket.id);
     console.log("socket array  " + JSON.stringify(socketArray));
@@ -215,10 +244,6 @@ io.on('connection', function (socket) {
     });
 
     var uploader = new SocketIOFile(socket, {
-        // uploadDir: {			// multiple directories
-        // 	music: 'data/music',
-        // 	document: 'data/document'
-        // },
         uploadDir: 'static/images/',							// simple directory
         accepts: ['audio/mpeg', 'audio/mp3', 'image/x-png', 'image/gif', 'image/jpeg', 'image/png'],		// chrome and some of browsers checking mp3 as 'audio/mp3', not 'audio/mpeg'
         maxFileSize: 4194304, 						// 4 MB. default is undefined(no limit)
@@ -231,7 +256,7 @@ io.on('connection', function (socket) {
         console.log(fileInfo);
     });
     uploader.on('stream', function (fileInfo) {
-        console.log(fileInfo.wrote / fileInfo.size +'byte(s)');
+        console.log((fileInfo.wrote / fileInfo.size) * 100 + '%');
     });
     uploader.on('complete', function (fileInfo) {
         console.log('Upload Complete.');
@@ -245,6 +270,36 @@ io.on('connection', function (socket) {
             .toFile(thumbTo, function (error5) {
                 console.log(error5);
             });
+
+
+        var where = {id: session.userId}
+        var tArray = {photo: fileInfo.name};
+
+        session(socket.handshake, {}, function (err) {
+            if (err) { /!* handle error *!/ }
+            var session = socket.handshake.session;
+            // do stuff
+
+            User.findOne({id:session.userId}).then(function (user) {
+                user.updateAttributes({
+                    photo:fileInfo.name
+                });
+                session.user = user;
+                session.save(function (err) { console.log("error save"+err)})
+
+            });
+            /*
+             User.update(newData, {where: { name: 'Max' } })
+             .then(updatedMax => {
+             console.log(updatedMax)
+             })
+             */
+
+            // alter session
+
+        });
+
+
     });
     uploader.on('error', function (err) {
         console.log('Error!', err);
@@ -256,3 +311,5 @@ io.on('connection', function (socket) {
     });
 
 });
+
+require('./routes/user.js')(app, isAdmin);

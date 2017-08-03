@@ -24,7 +24,7 @@ var tRoutes = function (app, isAdmin) {
                 })
                     .then(function (datas) {
                         res.render('user/index', {
-                            user: req.user,
+                            user: req.session.user,
                             results: datas,
                             count: pages,
                             currentPage: page
@@ -41,7 +41,7 @@ var tRoutes = function (app, isAdmin) {
         req.session.tForm = 'create';
 
         res.render('user/create', {
-            user: req.user,
+            user: req.session.user,
             data: model.attributeData
         });
     });
@@ -135,7 +135,7 @@ var tRoutes = function (app, isAdmin) {
 
         model.findById(id).then(function (m) {
             res.render('user/update', {
-                user: req.user,
+                user: req.session.user,
                 data: m
             });
         });
@@ -242,7 +242,7 @@ var tRoutes = function (app, isAdmin) {
         var id = req.params.id;
         model.findById(id).then(function (user) {
             res.render('user/view', {
-                user: req.user,
+                user: req.session.user,
                 data: user
             });
         })
