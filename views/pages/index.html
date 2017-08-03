@@ -49,6 +49,7 @@
                     </div>
                 </div>
 
+                <input type="hidden" id="to">
                 <!-- Search Box End -->
                 <!-- sideBar -->
                 <div class="row sideBar">
@@ -63,7 +64,7 @@
                         </div>
                         <div class="col-sm-9 col-xs-9 sideBar-main">
                             <div class="row">
-                                <div class="col-sm-8 col-xs-8 sideBar-name"><span class="name-meta"><%= result.fullname %></span>
+                                <div class="col-sm-8 col-xs-8 sideBar-name"><span class="name-meta"><%= result.username %></span>
                                 </div>
                                 <div class="col-sm-4 col-xs-4 pull-right sideBar-time"><span id="online<%= result.id; %>" class="online-meta pull-right heading-compose">connected</span></div>
                             </div>
@@ -188,7 +189,6 @@
 
 </div>
 <% include ../partials/main-footer.html %>
-<script src="/static/js/chat.js"></script>
 <!-- App End -->
 </body>
 

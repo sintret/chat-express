@@ -33,7 +33,7 @@ var attributeData = {
 }
 
 //User singleton
-var User = sequelize.define('user', attributeData);
+var model = sequelize.define('user', attributeData);
 
 var obj = {};
 for (var property in attributeData) {
@@ -44,9 +44,9 @@ for (var property in attributeData) {
 }
 
 //get attribute data
-User.attributeData = obj;
+model.attributeData = obj;
 
-User.updateSQL = function (tArray, callback) {
+model.updateSQL = function (tArray, callback) {
 
     callback = callback || function () {}
 
@@ -58,4 +58,4 @@ User.updateSQL = function (tArray, callback) {
     });
 };
 
-module.exports = User;
+module.exports = model;
