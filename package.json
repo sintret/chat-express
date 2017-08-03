@@ -29,6 +29,8 @@
     "sequelize": "^4.3.2",
     "sequelize-datatables": "^1.2.1",
     "sharp": "^0.18.2",
-    "socket.io": "^2.0.3"
+    "socket.io": "^2.0.3",
+    "socket.io-file": "^2.0.14",
+    "socket.io-file-client": "^2.0.121"
   }
 }

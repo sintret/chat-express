@@ -1,15 +1,15 @@
-var express = require("express");
-var app = express();
-var path = require("path");
-var passport = require('passport');
+const express = require("express");
+const app = express();
+const path = require("path");
+const passport = require('passport');
 var Strategy = require('passport-local').Strategy;
 var session = require('express-session');
+const sharp = require('sharp');
 
-var server = require('http').createServer(app);
-var socket = require('socket.io');
-var io = socket(server);
-var port = 3001;
-var io = require('socket.io').listen(app.listen(port));
+const socket = require('socket.io');
+const port = 3001;
+const io = socket.listen(app.listen(port));
+const SocketIOFile = require('socket.io-file');
 
 
 app.use(require('body-parser').urlencoded({extended: true}));
@@ -62,8 +62,8 @@ var User = require("./models/User.js");
 var Hash = require("./components/Hash.js");
 
 passport.use(new Strategy(
-    {usernameField: 'username',passwordField: 'password', passReqToCallback: true},
-    function(req, username, password, cb) {
+    {usernameField: 'username', passwordField: 'password', passReqToCallback: true},
+    function (req, username, password, cb) {
         // now you can check req.body.foo
         console.log(password);
 
@@ -96,40 +96,6 @@ passport.use(new Strategy(
         });
     }
 ));
-/*
-
-passport.use(new Strategy(
-    function (username, password, cb) {
-        console.log(password);
-
-        var pass = Hash.encrypt(password);
-        User.findOne({
-            where: {username: username, status: 1}
-        }).then(function (user) {
-            var a = socketArray.indexOf(user.id);
-            if (a >= 0) {
-                sess.sessionFlash = 2;
-                return cb(null, false);
-            }
-
-            console.log(JSON.stringify(user));
-            if (!user) {
-                sess.sessionFlashc = 1;
-                return cb(null, false);
-            }
-            if (user.password != pass) {
-                sess.sessionFlashc = 1;
-                console.log("user password" + user.password + " pass:" + pass);
-                return cb(null, false);
-            }
-            socketArray.push(user.id);
-            io.engine.generateId = function (req, res) {
-                return user.id; // custom id must be unique
-            }
-            return cb(null, user);
-        });
-    }));
-*/
 
 passport.serializeUser(function (user, cb) {
     cb(null, user);
@@ -165,11 +131,11 @@ app.get("/", loggedIn,
 app.get("/login", function (req, res) {
     //sess = req.session;
 
-    console.log("SESSION"+JSON.stringify(req.session));
+    console.log("SESSION" + JSON.stringify(req.session));
     if (req.isAuthenticated())
         res.redirect('/');
     else
-        res.render('pages/login', {data: {page_name: "login"}, sessionFlashc:req.session.sessionFlashc});
+        res.render('pages/login', {data: {page_name: "login"}, sessionFlashc: req.session.sessionFlashc});
 });
 
 app.post('/login',
@@ -177,29 +143,6 @@ app.post('/login',
         failureRedirect: '/login'
     }),
     function (req, res) {
-        /*var username = req.body.username;
-
-         console.log(username);
-
-         User.findOne({
-         where: {username: username, status: 1}
-         }).then( function (user) {
-         if(!user){
-         res.redirect('/login?error=1');
-         } else {
-         var a = socketArray.indexOf(user.id);
-         if (a >= 0) {
-         var index = socketArray.indexOf(req.user.id);
-         socketArray.splice(index, 1);
-         console.log("socket logout  " + socketArray);
-
-         req.logout();
-
-         res.redirect('/login?error=2');
-         }
-         }
-         });
-         */
         res.redirect('/');
     });
 
@@ -252,7 +195,9 @@ var isAdmin = function (req, res, next) {
         res.redirect('/');
     }
 }
-
+app.get('/socket.io-file-client.js', isAdmin, function (req, res, next) {
+    return res.sendFile(__dirname + '/node_modules/socket.io-file-client/socket.io-file-client.js');
+});
 require('./routes/user.js')(app, isAdmin);
 
 io.on('connection', function (socket) {
@@ -268,4 +213,46 @@ io.on('connection', function (socket) {
         socketArray.splice(index, 1);
         io.sockets.emit('onlines', {data: socketArray});
     });
+
+    var uploader = new SocketIOFile(socket, {
+        // uploadDir: {			// multiple directories
+        // 	music: 'data/music',
+        // 	document: 'data/document'
+        // },
+        uploadDir: 'static/images/',							// simple directory
+        accepts: ['audio/mpeg', 'audio/mp3', 'image/x-png', 'image/gif', 'image/jpeg', 'image/png'],		// chrome and some of browsers checking mp3 as 'audio/mp3', not 'audio/mpeg'
+        maxFileSize: 4194304, 						// 4 MB. default is undefined(no limit)
+        chunkSize: 10240,							// default is 10240(1KB)
+        transmissionDelay: 0,						// delay of each transmission, higher value saves more cpu resources, lower upload speed. default is 0(no delay)
+        overwrite: true 							// overwrite file if exists, default is true.
+    });
+    uploader.on('start', function (fileInfo) {
+        console.log('Start uploading');
+        console.log(fileInfo);
+    });
+    uploader.on('stream', function (fileInfo) {
+        console.log(fileInfo.wrote / fileInfo.size +'byte(s)');
+    });
+    uploader.on('complete', function (fileInfo) {
+        console.log('Upload Complete.');
+        console.log(fileInfo);
+        var fileOri = __dirname + '/static/images/' + fileInfo.name;
+        var thumbTo = __dirname + '/static/images/thumb/' + fileInfo.name;
+        console.log(fileOri);
+
+        sharp(fileOri)
+            .resize(100, 100)
+            .toFile(thumbTo, function (error5) {
+                console.log(error5);
+            });
+    });
+    uploader.on('error', function (err) {
+        console.log('Error!', err);
+
+    });
+    uploader.on('abort', function (fileInfo) {
+        console.log('Aborted: ', fileInfo);
+
+    });
+
 });
