@@ -50,6 +50,13 @@ app.use(function (req, res, next) {
         res.locals.tUserId = req.user.id;
         res.locals.roleId = req.user.roleId;
         req.session.id = req.user.id;
+        var t = req.user.id;
+
+
+        io.engine.generateId = function (req, res) {
+            return 'user'+t;
+        }
+
     } else {
         res.locals.tUserId = 0;
         res.locals.roleId = 0;
@@ -213,25 +220,8 @@ function makeid() {
     return text;
 }
 
-io.engine.generateId = function (req, res) {
-    if(req.session.userId){
-        return "user"+makeid(); // custom id must be unique
-
-    } else{
-        return "user"+req.session.userId; // custom id must be unique
-    }
-}
 
 io.on('connection', function (socket) {
-
-    /*session(socket.handshake, {}, function (err) {
-        if (err) {
-            /!* handle error *!/
-        }
-        var session = socket.handshake.session;
-        // do stuff
-
-    });*/
 
     var allConnectedClients = Object.keys(io.sockets.connected);
     socketArray = allConnectedClients;
@@ -247,14 +237,14 @@ io.on('connection', function (socket) {
     io.emit('onlines', {data: socketArray});
 
     socket.on("sent", function (data) {
-        console.log( socketId + " sent : " + JSON.stringify(data));
+        console.log(socketId + " sent : " + JSON.stringify(data));
         data.from = socketId;
         io.emit("receive", data);
         Api.sent(data, socketId);
 
     });
 
-    socket.on('disconnect', function () {
+   socket.on('disconnect', function () {
         console.log("socket left  ");
         var index = socketArray.indexOf(socket.id);
         socketArray.splice(index, 1);
@@ -297,16 +287,19 @@ io.on('connection', function (socket) {
             if (err) {
                 /!* handle error *!/
             }
-            var session = socket.handshake.session;
+            var tse = socket.handshake.session;
+            console.log("socket.handshake.session TO : " + JSON.stringify(tse));
+
             // do stuff
 
-            User.findOne({id: session.userId}).then(function (user) {
+            User.findOne({where: {id: tse.userId}}).then(function (user) {
+                console.log("UPLOAD TO : " + JSON.stringify(user));
                 user.updateAttributes({
                     photo: fileInfo.name
                 });
-                session.user = user;
-                session.save(function (err) {
-                    console.log("error save" + err)
+                tse.user.photo = fileInfo.name;
+                tse.save(function (err) {
+                    console.log("error save" + err);
                 })
 
             });

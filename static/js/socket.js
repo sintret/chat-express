@@ -37,7 +37,7 @@ socket.on('onlines', function (datas) {
 
 //receive message
 socket.on("receive", function (data) {
-    alert(JSON.stringify(data));
+    //alert(JSON.stringify(data));
     //var data = datas.data;
     var to = data.to;
     var from = data.from;
@@ -185,7 +185,7 @@ function checkCookie() {
 function buildMessage(message, from, to) {
     var d = new Date();
     var t = d.getHours() + '.' + d.getMinutes();
-    var u = $("#input" + to).val();
+    var u = $("#input" + from).val();
 
     var html = '';
     if (from == $("#meId").val()) {
