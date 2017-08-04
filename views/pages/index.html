@@ -10,7 +10,8 @@
 </head>
 
 <body>
-<span class="notification-growl" style="display:none"><% if(sessionFlash){%><%= JSON.stringify(sessionFlash); %><%}%></span>
+<span class="notification-growl"
+      style="display:none"><% if(sessionFlash){%><%= JSON.stringify(sessionFlash); %><%}%></span>
 
 <div class="container app">
     <div class="row app-one">
@@ -49,14 +50,24 @@
                     </div>
                 </div>
 
-                <input type="hidden" id="to">
+                <input type="hidden" id="meId" value="<%= user.id %>">
+                <input type="hidden" id="meUsername" value="<%= user.username %>">
+
                 <!-- Search Box End -->
                 <!-- sideBar -->
                 <div class="row sideBar">
-                    <% if(users.length) { %>
-                    <% users.forEach(function(result) { %>
+                    <%  var y = 0; if(users.length) { %>
+                    <% users.forEach(function(result) {
+                    if(y==0) {
+                    %>
+                    <input type="hidden" id="activeId" value="<%= result.id %>">
+                    <input type="hidden" id="activeUser" value="<%= result.username %>">
+                    <% } %>
 
-                    <div class="row sideBar-body" data-id="<%= result.id; %>" data-u="user<%= result.id; %>" data-username="<%= result.username; %>" data-photo="<%= result.photo; %>"  >
+                    <input type="hidden" id="input<%= result.id;%>" value="<%= result.username;%>">
+
+                    <div class="row sideBar-body" data-id="<%= result.id; %>" data-u="user<%= result.id; %>"
+                         data-username="<%= result.username; %>" data-photo="<%= result.photo; %>">
                         <div class="col-sm-3 col-xs-3 sideBar-avatar">
                             <div class="avatar-icon">
                                 <img src="/static/images/thumb/<%= result.photo %>">
@@ -66,12 +77,14 @@
                             <div class="row">
                                 <div class="col-sm-8 col-xs-8 sideBar-name"><span class="name-meta"><%= result.username %></span>
                                 </div>
-                                <div class="col-sm-4 col-xs-4 pull-right sideBar-time"><span id="online<%= result.id; %>" class="online-meta pull-right heading-compose">connected</span></div>
+                                <div class="col-sm-4 col-xs-4 pull-right sideBar-time"><span
+                                        id="online<%= result.id; %>" class="online-meta pull-right heading-compose">connected</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <% });} %>
+                    <%  y++});} %>
 
                 </div>
                 <!-- Sidebar End -->
@@ -114,23 +127,22 @@
                 <div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
                     <div class="heading-avatar-icon">
                         <img src="/static/images/thumb/b.jpg" title="test satu">
-                        <a class="heading-name-meta">Test cc Satu</a>
                     </div>
                 </div>
-               <!-- <div class="col-sm-8 col-xs-7 heading-name">
-                    <a class="heading-name-meta">Test cc Satu</a>
-                    <span class="heading-online">Online</span>
-                </div>-->
+                <!-- <div class="col-sm-8 col-xs-7 heading-name">
+                     <a class="heading-name-meta">Test cc Satu</a>
+                     <span class="heading-online">Online</span>
+                 </div>-->
 
             </div>
             <!-- Heading End -->
 
             <!-- Message Box -->
-            <div class="row message" id="conversation">
+            <div class="row message" id="conversation" data-id="">
 
                 <div class="row message-previous">
                     <div class="col-sm-12 previous">
-                        <a onclick="previous(this)" id="ankitjain28" name="20">
+                        <a id="ankitjain28" name="20">
                             Show Previous Message!
                         </a>
                     </div>
@@ -139,12 +151,13 @@
                 <div class="row message-body">
                     <div class="col-sm-12 message-main-receiver">
                         <div class="receiver">
+                            <div class="reply-emojis">admin:</div>
                             <div class="message-text">
-                                Hyy, Its Awesome..!
+                                Hyy, Its Awesome..! Hyy, Its Awesome..!  Hyy, Its Awesome..! Hyy, Its Awesome..! Hyy, Its Awesome..! Hyy, Its Awesome..! Hyy, Its Awesome..! Hyy, Its Awesome..! Hyy, Its Awesome..! Hyy, Its Awesome..! Hyy, Its Awesome..! Hyy, Its Awesome..! Hyy, Its Awesome..! Hyy, Its Awesome..! Hyy, Its Awesome..!
                             </div>
-                <span class="message-time pull-right">
-                  12.30
-                </span>
+                            <span class="message-time pull-right">
+                              12.30
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -153,7 +166,7 @@
                     <div class="col-sm-12 message-main-sender">
                         <div class="sender">
                             <div class="message-text">
-                                Thanks n I know its awesome...!
+                                Thanks n I know its awesome...! Thanks n I know its awesome...!Thanks n I know its awesome...!Thanks n I know its awesome...!Thanks n I know its awesome...!Thanks n I know its awesome...!Thanks n I know its awesome...!Thanks n I know its awesome...!Thanks n I know its awesome...!
                             </div>
                 <span class="message-time pull-right">
                   12.45
@@ -185,7 +198,6 @@
         <!-- Conversation End -->
     </div>
     <!-- App One End -->
-
 
 </div>
 <% include ../partials/main-footer.html %>

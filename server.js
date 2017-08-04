@@ -11,7 +11,7 @@ const port = 3001;
 const io = socket(app.listen(port));
 const SocketIOFile = require('socket.io-file');
 
-//app.listen(port);
+var Api = require('./components/Api.js');
 
 app.set('trust proxy', 1); // trust first proxy
 
@@ -67,9 +67,6 @@ var Hash = require("./components/Hash.js");
 passport.use(new Strategy(
     {usernameField: 'username', passwordField: 'password', passReqToCallback: true},
     function (req, username, password, cb) {
-        // now you can check req.body.foo
-        console.log(password);
-
         var pass = Hash.encrypt(password);
         User.findOne({
             where: {username: username, status: 1}
@@ -88,7 +85,7 @@ passport.use(new Strategy(
             req.session.user = user;
             req.session.userId = user.id;
 
-            var userid = 'user'+user.id;
+            var userid = 'user' + req.session.userId;
 
             var a = socketArray.indexOf(userid);
             if (a >= 0) {
@@ -120,6 +117,7 @@ app.get("/", loggedIn,
 
     require('connect-ensure-login').ensureLoggedIn(),
     function (req, res) {
+
         User.findAll({
             where: {
                 id: {
@@ -137,8 +135,6 @@ app.get("/", loggedIn,
     });
 
 app.get("/login", function (req, res) {
-    //sess = req.session;
-
     console.log("SESSION" + JSON.stringify(req.session));
     if (req.isAuthenticated())
         res.redirect('/');
@@ -207,8 +203,35 @@ var isAdmin = function (req, res, next) {
 app.get('/socket.io-file-client.js', function (req, res, next) {
     return res.sendFile(__dirname + '/node_modules/socket.io-file-client/socket.io-file-client.js');
 });
+function makeid() {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (var i = 0; i < 5; i++)
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
+io.engine.generateId = function (req, res) {
+    if(req.session.userId){
+        return "user"+makeid(); // custom id must be unique
+
+    } else{
+        return "user"+req.session.userId; // custom id must be unique
+    }
+}
 
 io.on('connection', function (socket) {
+
+    /*session(socket.handshake, {}, function (err) {
+        if (err) {
+            /!* handle error *!/
+        }
+        var session = socket.handshake.session;
+        // do stuff
+
+    });*/
 
     var allConnectedClients = Object.keys(io.sockets.connected);
     socketArray = allConnectedClients;
@@ -218,7 +241,18 @@ io.on('connection', function (socket) {
     console.log("socket allConnectedClients  " + JSON.stringify(allConnectedClients));
     console.log("socket socketArray  " + JSON.stringify(socketArray));
 
+    var str = socket.id;
+    var socketId = parseInt(str.replace("user", ""));
+
     io.emit('onlines', {data: socketArray});
+
+    socket.on("sent", function (data) {
+        console.log( socketId + " sent : " + JSON.stringify(data));
+        data.from = socketId;
+        io.emit("receive", data);
+        Api.sent(data, socketId);
+
+    });
 
     socket.on('disconnect', function () {
         console.log("socket left  ");
@@ -276,15 +310,6 @@ io.on('connection', function (socket) {
                 })
 
             });
-            /*
-             User.update(newData, {where: { name: 'Max' } })
-             .then(updatedMax => {
-             console.log(updatedMax)
-             })
-             */
-
-            // alter session
-
         });
 
 

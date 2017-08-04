@@ -35,6 +35,23 @@ socket.on('onlines', function (datas) {
     });
 });
 
+//receive message
+socket.on("receive", function (data) {
+    alert(JSON.stringify(data));
+    //var data = datas.data;
+    var to = data.to;
+    var from = data.from;
+    var message = data.message;
+    var conversation = $("#conversation").data("id");
+    for (i = 0; i < to.length; i++) {
+        if (conversation == to[i]) {
+            $("#conversation").append(buildMessage(message, from, to[i]));
+        } else {
+            $("#conversation").append(buildMessage(message, from, to[i]));
+        }
+    }
+});
+
 
 //upload photo in modal
 var uploader = new SocketIOFileClient(socket);
@@ -55,6 +72,7 @@ uploader.on('complete', function (fileInfo) {
 
     setTimeout(function () {
         $("#modal-image").attr('src', photo);
+        $(".profile-modal").attr('src',photo);
     }, 2000);
 
     console.log('Upload Complete', fileInfo);
@@ -81,11 +99,7 @@ $("#send-comment").on("click", function () {
         alert("can not blank!");
         return;
     }
-
-    var arr = cookieArray();
-    for (i = 0; i < arr.length; i++) {
-        socket.emit(arr[i], comment);
-    }
+    socket.emit("sent", {to: cookieArray(), message: comment});
     $("#comment").val("");
 })
 
@@ -95,7 +109,8 @@ $(".sideBar-body").each(function () {
         $(this).addClass('grey');
         var h = '<div class="col-sm-2 col-md-1 col-xs-3 heading-avatar"><div class="heading-avatar-icon"><img src="/static/images/thumb/' + $(this).data('photo') + '" title="' + $(this).data('username') + '"><a class="heading-name-meta">' + $(this).data("username") + '</a></div></div>';
         $(".avatar-place").html(h);
-        cookieSet([], $(this).data("u"));
+        cookieSet([], $(this).data("id"));
+        $("#conversation").data("id", $("#activeId").val());
     }
     n++;
 });
@@ -109,7 +124,7 @@ $(".sideBar-body").on("click", function () {
     $this.addClass('grey');
     var h = '<div class="col-sm-2 col-md-1 col-xs-3 heading-avatar"><div class="heading-avatar-icon"><img src="/static/images/thumb/' + $(this).data('photo') + '" title="' + $(this).data('username') + '"><a class="heading-name-meta">' + $(this).data("username") + '</a></div></div>';
     $(".avatar-place").html(h);
-    cookieSet([], $this.data("u"));
+    cookieSet([], $this.data("id"));
 
 });
 
@@ -136,14 +151,14 @@ function cookieArray() {
 function setCookie(cname, cvalue) {
     var d = new Date();
     d.setTime(d.getTime() + (1 * 24 * 60 * 60 * 1000));
-    var expires = "expires="+d.toUTCString();
+    var expires = "expires=" + d.toUTCString();
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 
 function getCookie(cname) {
     var name = cname + "=";
     var ca = document.cookie.split(';');
-    for(var i = 0; i < ca.length; i++) {
+    for (var i = 0; i < ca.length; i++) {
         var c = ca[i];
         while (c.charAt(0) == ' ') {
             c = c.substring(1);
@@ -165,4 +180,19 @@ function checkCookie() {
             setCookie("username", user, 365);
         }
     }
+}
+
+function buildMessage(message, from, to) {
+    var d = new Date();
+    var t = d.getHours() + '.' + d.getMinutes();
+    var u = $("#input" + to).val();
+
+    var html = '';
+    if (from == $("#meId").val()) {
+        html += '<div class="row message-body"><div class="col-sm-12 message-main-sender"><div class="sender"><div class="message-text">' + message + '</div><span class="message-time pull-right">' + t + '</span></div></div></div>';
+    } else {
+        html += '<div class="row message-body"><div class="col-sm-12 message-main-receiver"><div class="receiver"><div class="reply-emojis">' + u + ':</div><div class="message-text">' + message + '</div><span class="message-time pull-right">' + t + '</span></div></div></div>';
+    }
+
+    return html;
 }

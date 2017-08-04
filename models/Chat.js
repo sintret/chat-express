@@ -17,7 +17,9 @@ var attributeData = {
 }
 
 //Model singleton
-var model = sequelize.define('chat', attributeData);
+var model = sequelize.define('chat', attributeData,{
+    timestamps: false
+});
 
 var obj = {};
 for (var property in attributeData) {
