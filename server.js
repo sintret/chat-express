@@ -167,6 +167,54 @@ app.post('/login',
         res.redirect('/');
     });
 
+app.get("/forgot", function (req, res) {
+    console.log("SESSION" + JSON.stringify(req.session));
+    if (req.isAuthenticated())
+        res.redirect('/');
+    else
+        res.render('pages/forgot', {data: {page_name: "forgot"}});
+});
+
+app.post('/forgot', function (req, res) {
+    var email = req.body.email;
+    email = email.trim();
+    User.findOne({
+        where: {
+            email: email
+        }
+    }).then(function (user) {
+        if (!user) {
+            res.redirect('/forgot?error=true');
+        } else {
+
+           /* var nodemailer = require("nodemailer");
+
+            var smtpTransport = nodemailer.createTransport("SMTP",{
+                service: "Gmail",
+                auth: {
+                    user: "superchatawesome@gmail.com",
+                    pass: "DonotWorry88"
+                }
+            });
+
+            smtpTransport.sendMail({
+                from: "superchatawesome@gmail.com", // sender address
+                to: user.email, // comma separated list of receivers
+                subject: "Your Recovery Password", // Subject line
+                text: '<b>Hai </b>' + user.fullname + '<p> Your Password is : '+ Hash.decrypt(user.password)+'</p> Thanks' // plaintext body
+            }, function(error, response){
+                if(error){
+                    console.log(error);
+                }else{
+                    console.log("Mail sent: " + response.message);
+                }
+            });*/
+            res.redirect('/forgot?success=true');
+
+        }
+    });
+});
+
 app.get('/logout',
     function (req, res) {
         if (req.isAuthenticated()) {

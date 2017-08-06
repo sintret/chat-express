@@ -7,7 +7,7 @@
 
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Chat - Login</title>
+    <title>Chat - Forgot Password</title>
 </head>
 <body>
 
@@ -18,31 +18,21 @@
 
         <!-- <img class="profile-img-card" src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120" alt="" /> -->
         <img id="profile-img" class="profile-img-card" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"/>
-        <% if(sessionFlashc==1) { %>
-        <div class="alert alert-danger" id="wrong1" role="alert">
-            Username or password <strong> is Wrong!</strong>
+        <div class="alert alert-danger" style="display: none" id="wrong1" role="alert">
+            Email <strong> not found!</strong>
         </div>
-        <% } %>
-        <% if(sessionFlashc==2) { %>
-        <div class="alert alert-danger" id="wrong2" role="alert">
-           Your username is correct but your username <strong> is used and got online!</strong>
+        <div class="alert alert-danger" style="display: none" id="wrong2" role="alert">
+            <strong> Check your email!</strong> we sent password to your email..
         </div>
-        <% } %>
-        <form class="form-signin" method="post" action="/login">
+        <h3 class="text-center">Request password reset</h3>
+        <form class="form-signin" method="post" action="/forgot">
             <span id="reauth-email" class="reauth-email"></span>
-            <input type="text" id="inputEmail" class="form-control" placeholder="Your Username" name="username" required
+            <input type="text" id="email" class="form-control" placeholder="Your Email" name="email" required
                    autofocus>
-            <input type="password" id="inputPassword" class="form-control" placeholder="Password" name="password"
-                   required>
-            <div id="remember" class="checkbox">
-                <label>
-                    <input type="checkbox" value="remember-me"> Remember me
-                </label>
-            </div>
-            <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">Sign in</button>
+            <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">Send</button>
         </form><!-- /form -->
-        <a href="/forgot" class="forgot-password">
-            Forgot the password?
+        <a href="/login" class="forgot-password">
+            back to Login
         </a>
     </div><!-- /card-container -->
 </div><!-- /container -->
@@ -63,11 +53,12 @@
         }
     };
     var tError = getUrlParameter('error');
+    var tSuccess = getUrlParameter('success');
 
-    if (tError == 1) {
+    if (tError) {
         $("#wrong1").show();
     }
-    if (tError == 2) {
+    if (tSuccess) {
         $("#wrong2").show();
     }
 
