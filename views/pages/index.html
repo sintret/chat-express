@@ -13,6 +13,8 @@
 <span class="notification-growl"
       style="display:none"><% if(sessionFlash){%><%= JSON.stringify(sessionFlash); %><%}%></span>
 
+
+
 <div class="container app">
     <div class="row app-one">
 
@@ -200,7 +202,12 @@
     <!-- App One End -->
 
 </div>
+<script>
+    var chatsStore = [];
+    chatsStore = <%- JSON.stringify(chats) %>;
+</script>
 <% include ../partials/main-footer.html %>
+
 <!-- App End -->
 </body>
 

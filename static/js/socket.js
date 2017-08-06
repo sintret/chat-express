@@ -1,5 +1,5 @@
 var l = 'http://localhost:3001';
-var s = 'http://sintret.com:3001';
+var s = 'https://chat.sintret.com';
 
 var toId = [];
 
@@ -37,17 +37,25 @@ socket.on('onlines', function (datas) {
 
 //receive message
 socket.on("receive", function (data) {
-    //alert(JSON.stringify(data));
-    //var data = datas.data;
+    var d = new Date();
+
     var to = data.to;
     var from = data.from;
     var message = data.message;
     var conversation = $("#conversation").data("id");
     for (i = 0; i < to.length; i++) {
-        if (conversation == to[i]) {
+        var obj = {
+            id: null,
+            message: message,
+            to: to[i],
+            from: from,
+            updatedAt: d
+        }
+        chatsStore.push(obj);
+
+        if (to[i] == $("#activeId").val()) {
             $("#conversation").append(buildMessage(message, from, to[i]));
-        } else {
-            $("#conversation").append(buildMessage(message, from, to[i]));
+            $('#conversation').scrollTop($('#conversation')[0].scrollHeight);
         }
     }
 });
@@ -72,7 +80,7 @@ uploader.on('complete', function (fileInfo) {
 
     setTimeout(function () {
         $("#modal-image").attr('src', photo);
-        $(".profile-modal").attr('src',photo);
+        $(".profile-modal").attr('src', photo);
     }, 2000);
 
     console.log('Upload Complete', fileInfo);
@@ -111,6 +119,8 @@ $(".sideBar-body").each(function () {
         $(".avatar-place").html(h);
         cookieSet([], $(this).data("id"));
         $("#conversation").data("id", $("#activeId").val());
+        searchUser($(this).data("id"));
+        $('#conversation').scrollTop($('#conversation')[0].scrollHeight);
     }
     n++;
 });
@@ -124,7 +134,13 @@ $(".sideBar-body").on("click", function () {
     $this.addClass('grey');
     var h = '<div class="col-sm-2 col-md-1 col-xs-3 heading-avatar"><div class="heading-avatar-icon"><img src="/static/images/thumb/' + $(this).data('photo') + '" title="' + $(this).data('username') + '"><a class="heading-name-meta">' + $(this).data("username") + '</a></div></div>';
     $(".avatar-place").html(h);
+    searchUser($this.data("id"));
     cookieSet([], $this.data("id"));
+    $("#conversation").attr("data-id", $this.data("id"));
+    $("#activeId").val($this.data("id"));
+    $("#activeUser").val($this.data("username"));
+    document.getElementById('conversation').scrollIntoView();
+    $('#conversation').scrollTop($('#conversation')[0].scrollHeight);
 
 });
 
@@ -182,9 +198,9 @@ function checkCookie() {
     }
 }
 
-function buildMessage(message, from, to) {
+function buildMessage(message, from, to, t) {
     var d = new Date();
-    var t = d.getHours() + '.' + d.getMinutes();
+    t = t || d.getHours() + '.' + d.getMinutes();
     var u = $("#input" + from).val();
 
     var html = '';
@@ -195,4 +211,16 @@ function buildMessage(message, from, to) {
     }
 
     return html;
+}
+
+function searchUser(id) {
+    $("#conversation").html("");
+    var arr = [];
+    for (i = 0; i < chatsStore.length; i++) {
+        if (chatsStore[i].to == id) {
+            arr.push(chatsStore[i]);
+            $("#conversation").append(buildMessage(chatsStore[i].message, chatsStore[i].from, chatsStore[i].to));
+        }
+    }
+    return arr;
 }

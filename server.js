@@ -54,7 +54,7 @@ app.use(function (req, res, next) {
 
 
         io.engine.generateId = function (req, res) {
-            return 'user'+t;
+            return 'user' + t;
         }
 
     } else {
@@ -132,9 +132,19 @@ app.get("/", loggedIn,
                 }
             }
         }).then(function (users) {
-            res.render('pages/index', {
-                user: req.session.user,
-                users: users
+            var Chat = require('./models/Chat.js');
+            Chat.findAll({raw: true}, {
+                limit: 200,
+                order: [
+                    ['id', 'desc']
+                ]
+            }).then(function (chats) {
+
+                res.render('pages/index', {
+                    user: req.session.user,
+                    users: users,
+                    chats: chats
+                });
             });
         });
 
@@ -244,7 +254,7 @@ io.on('connection', function (socket) {
 
     });
 
-   socket.on('disconnect', function () {
+    socket.on('disconnect', function () {
         console.log("socket left  ");
         var index = socketArray.indexOf(socket.id);
         socketArray.splice(index, 1);
