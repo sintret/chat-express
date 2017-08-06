@@ -189,13 +189,33 @@ app.get('/test',
 app.post('/post', loggedIn, function (req, res) {
     var pk = req.body.pk;
     var value = req.body.value;
+    value = value.trim();
+
+    if (value.length < 4) {
+        var json = {
+            status: 'error',
+            msg: 'min length is 4 chars!',
+            data: null
+        }
+        res.json(json);
+        return;
+    }
 
     var data = [pk, value, req.user.id];
 
+    if (pk == 'password') {
+        if (value == 'XXXXXX') {
+            data = [pk, req.user.password, req.user.id];
+        } else {
+            data = [pk, Hash.encrypt(value), req.user.id];
+        }
+    }
+
     User.updateSQL(data).then(function (metadata) {
         var json = {
-            error: null,
-            data: value
+            status: null,
+            msg: 'ok!',
+            data: null
         }
         res.json(json);
     });

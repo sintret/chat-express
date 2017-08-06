@@ -36,5 +36,14 @@ $(".profile-modal").on("click", function () {
 $.fn.editable.defaults.mode = 'inline';
 
 $(document).ready(function () {
-    $('#modal-fullname').editable();
+    $('#modal-fullname').editable({
+        success: function(response, newValue) {
+            if(response.status == 'error') return response.msg; //msg will be shown in editable form
+        }
+    });
+    $('#modal-password').editable({
+        success: function(response, newValue) {
+            if(response.status == 'error') return response.msg; //msg will be shown in editable form
+        }
+    });
 });

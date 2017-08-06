@@ -87,6 +87,8 @@ uploader.on('complete', function (fileInfo) {
 });
 uploader.on('error', function (err) {
     console.log('Error!', err);
+    //toastr.warning(err, err, {timeOut: 5000});
+    alert(err);
 });
 uploader.on('abort', function (fileInfo) {
     console.log('Aborted: ', fileInfo);
