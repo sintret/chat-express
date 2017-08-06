@@ -15,6 +15,7 @@ $ npm install
 $ npm install bower -g
 $ bower install bootstrap
 $ bower install components-font-awesome
+$ bower install toastr
 ```
 
 Start the server.
