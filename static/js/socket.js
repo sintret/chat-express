@@ -219,7 +219,9 @@ function searchUser(id) {
     for (i = 0; i < chatsStore.length; i++) {
         if (chatsStore[i].to == id || chatsStore[i].from == id) {
             arr.push(chatsStore[i]);
-            $("#conversation").append(buildMessage(chatsStore[i].message, chatsStore[i].from, chatsStore[i].to));
+            var d = new Date(chatsStore[i].updatedAt);
+            var t = d.getHours() + '.' + d.getMinutes();
+            $("#conversation").append(buildMessage(chatsStore[i].message, chatsStore[i].from, chatsStore[i].to, t));
         }
     }
     return arr;
