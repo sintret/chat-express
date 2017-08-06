@@ -7,7 +7,7 @@ var tRoutes = function (app, isAdmin) {
     var fs = require('fs');
     app.use(fileUpload());
 
-    app.get("/users",isAdmin, function (req, res) {
+    app.get("/users", isAdmin, function (req, res) {
         console.log(JSON.stringify(req.user));
         var limit = 50;
         var offset = 0;
@@ -17,11 +17,11 @@ var tRoutes = function (app, isAdmin) {
                 var pages = Math.ceil(data.count / limit);
                 offset = limit * (page - 1);
                 model.findAll({
-                    //attributes: ['id', 'first_name', 'last_name', 'date_of_birth'],
-                    limit: limit,
-                    offset: offset,
-                    $sort: {id: 1}
-                })
+                        //attributes: ['id', 'first_name', 'last_name', 'date_of_birth'],
+                        limit: limit,
+                        offset: offset,
+                        $sort: {id: 1}
+                    })
                     .then(function (datas) {
                         res.render('user/index', {
                             user: req.session.user,
@@ -37,7 +37,7 @@ var tRoutes = function (app, isAdmin) {
 
     });
 
-    app.get('/user/create',isAdmin, function (req, res) {
+    app.get('/user/create', isAdmin, function (req, res) {
         req.session.tForm = 'create';
 
         res.render('user/create', {
@@ -68,7 +68,7 @@ var tRoutes = function (app, isAdmin) {
         });
     }
 
-    app.post('/user/create', userCheck, isAdmin,function (req, res) {
+    app.post('/user/create', userCheck, isAdmin, function (req, res) {
         var today = new Date();
         var milliseconds = today.getMilliseconds();
         var photo = 'user.png';
@@ -79,8 +79,12 @@ var tRoutes = function (app, isAdmin) {
             var sampleFile = req.files.photo;
             var imageName = milliseconds + sampleFile.name;
             photo = imageName;
-            var imageTo = __dirname + './../static/images/' + imageName;
-            var thumbTo = __dirname + './../static/images/thumb/' + imageName;
+            var imageTo = process.env.PWD + '/static/images/' + imageName;
+            var thumbTo = process.env.PWD + '/static/images/thumb/' + imageName;
+
+            //var imageTo = '/var/www/nodejs/chat/static/images/' + imageName;
+            //var thumbTo = '/var/www/nodejs/chat/static/images/thumb/' + imageName;
+
             // Use the mv() method to place the file somewhere on your server
             sampleFile.mv(imageTo, function (err) {
                 if (err) {
@@ -128,7 +132,7 @@ var tRoutes = function (app, isAdmin) {
 
     })
 
-    app.get('/user/update/:id', userCheck,isAdmin, function (req, res) {
+    app.get('/user/update/:id', userCheck, isAdmin, function (req, res) {
         req.session.tForm = 'update';
 
         var id = req.params.id;
@@ -142,7 +146,7 @@ var tRoutes = function (app, isAdmin) {
 
     });
 
-    app.post('/user/update/:id',isAdmin, function (req, res) {
+    app.post('/user/update/:id', isAdmin, function (req, res) {
         req.session.tForm = 'update';
         var id = req.params.id;
 
@@ -157,8 +161,10 @@ var tRoutes = function (app, isAdmin) {
             var sampleFile = req.files.photo;
             var imageName = milliseconds + sampleFile.name;
             photo = imageName;
-            var imageTo = __dirname + './../static/images/' + imageName;
-            var thumbTo = __dirname + './../static/images/thumb/' + imageName;
+            //var imageTo = __dirname + './../static/images/' + imageName;
+            //var thumbTo = __dirname + './../static/images/thumb/' + imageName;
+            var imageTo = process.env.PWD + '/static/images/' + imageName;
+            var thumbTo = process.env.PWD + '/static/images/thumb/' + imageName;
             // Use the mv() method to place the file somewhere on your server
             sampleFile.mv(imageTo, function (err) {
                 if (err) {
@@ -215,30 +221,30 @@ var tRoutes = function (app, isAdmin) {
 
     });
 
-    app.delete('/user/:id',isAdmin, function (req, res) {
+    app.delete('/user/:id', isAdmin, function (req, res) {
         var id = req.params.id;
         model.findById(id).then(function (user) {
-          if(user){
-              var json = {
-                  error: "",
-                  title: "Success to Delete User",
-                  message: "Success!"
-              };
-              user.destroy();
-              res.json(json);
-          }  else {
-              var json = {
-                  error: "User not known",
-                  title: "Failed to Delete User",
-                  message: "Please check your request again!"
-              };
-              res.json(json);
-          }
+            if (user) {
+                var json = {
+                    error: "",
+                    title: "Success to Delete User",
+                    message: "Success!"
+                };
+                user.destroy();
+                res.json(json);
+            } else {
+                var json = {
+                    error: "User not known",
+                    title: "Failed to Delete User",
+                    message: "Please check your request again!"
+                };
+                res.json(json);
+            }
         })
 
     });
 
-    app.get('/user/view/:id',isAdmin, function (req, res) {
+    app.get('/user/view/:id', isAdmin, function (req, res) {
         var id = req.params.id;
         model.findById(id).then(function (user) {
             res.render('user/view', {
@@ -248,7 +254,7 @@ var tRoutes = function (app, isAdmin) {
         })
     })
 
-    app.get("/userList",isAdmin, function (req, res) {
+    app.get("/userList", isAdmin, function (req, res) {
         datatable(model, req.query, {}).then(function (result) {
             res.json(result);
         });
