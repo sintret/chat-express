@@ -3,7 +3,7 @@ var s = 'https://chat.sintret.com';
 
 var toId = [];
 
-var socket = io(l);
+var socket = io(s);
 socket.on('onlines', function (datas) {
     var data = datas.data;
 
@@ -53,7 +53,7 @@ socket.on("receive", function (data) {
         }
         chatsStore.push(obj);
 
-        if (to[i] == $("#activeId").val()) {
+        if (to[i] == $("#activeId").val() || from == $("#activeId").val()) {
             $("#conversation").append(buildMessage(message, from, to[i]));
             $('#conversation').scrollTop($('#conversation')[0].scrollHeight);
         }
@@ -217,7 +217,7 @@ function searchUser(id) {
     $("#conversation").html("");
     var arr = [];
     for (i = 0; i < chatsStore.length; i++) {
-        if (chatsStore[i].to == id) {
+        if (chatsStore[i].to == id || chatsStore[i].from == id) {
             arr.push(chatsStore[i]);
             $("#conversation").append(buildMessage(chatsStore[i].message, chatsStore[i].from, chatsStore[i].to));
         }
