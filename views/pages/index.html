@@ -67,6 +67,7 @@
                     <% } %>
 
                     <input type="hidden" id="input<%= result.id;%>" value="<%= result.username;%>">
+                    <input type="hidden" id="avatar<%= result.id;%>" value="/static/images/thumb/<%= result.photo;%>">
 
                     <div class="row sideBar-body" data-id="<%= result.id; %>" data-u="user<%= result.id; %>"
                          data-username="<%= result.username; %>" data-photo="<%= result.photo; %>">

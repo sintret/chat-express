@@ -56,6 +56,10 @@ socket.on("receive", function (data) {
         if (to[i] == $("#activeId").val() || from == $("#activeId").val()) {
             $("#conversation").append(buildMessage(message, from, to[i]));
             $('#conversation').scrollTop($('#conversation')[0].scrollHeight);
+
+            if (to[i] == $("#meId").val()) {
+                notifyMe(message, from)
+            }
         }
     }
 });
@@ -227,4 +231,30 @@ function searchUser(id) {
         }
     }
     return arr;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    if (Notification.permission !== "granted")
+        Notification.requestPermission();
+});
+
+function notifyMe(message, from) {
+    if (!Notification) {
+        alert('Notifikasi Desktop tidak tersedia di browser kamu! Coba browser yang lain.');
+        return;
+    }
+    var icon = $("#avatar" + from).val();
+    var u = $("#input" + from).val();
+    if (Notification.permission !== "granted")
+        Notification.requestPermission();
+    else {
+        var notification = new Notification("Chat from " + u, {
+            icon: icon,
+            body: message
+        });
+        /*notification.onclick = function () {
+         //window.open(url);
+         window.open(url);
+         };*/
+    }
 }
