@@ -26,3 +26,12 @@ $ node server.js
 
 Open a web browser and navigate to [http://localhost:3000/](http://127.0.0.1:3000/)
 to see the example in action.  Log in using username `admin` and password `chat`.
+
+
+## Demo Page
+Click here  [https://chat.sintret.com/]
+username : test1
+password : chat
+
+username is test1 until test8
+password : chat
