@@ -44,7 +44,7 @@ function chooseProfile(username, email, role, image) {
         roleName = 'Client';
     }
 
-    if(image = ""){
+    if(image == ""){
         image = "user.png";
     }
     $(".modal-choosetitle").html(username);
