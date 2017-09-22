@@ -106,7 +106,7 @@ form.onsubmit = function (ev) {
 };
 
 //sent message
-$("#send-comment").on("click", function () {
+function sendComment() {
     var comment = $("#comment").val();
     comment = $.trim(comment);
     if (comment == '') {
@@ -115,7 +115,16 @@ $("#send-comment").on("click", function () {
     }
     socket.emit("sent", {to: cookieArray(), message: comment});
     $("#comment").val("");
-})
+}
+$("#send-comment").on("click", function () {
+    sendComment();
+});
+
+$("#comment").keypress(function (e) {
+    if(e.which==13){
+        sendComment();
+    }
+});
 
 var n = 0;
 $(".sideBar-body").each(function () {

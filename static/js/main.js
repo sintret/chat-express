@@ -33,17 +33,40 @@ $(".profile-modal").on("click", function () {
     $('#modal-profile').modal('show');
 });
 
+function chooseProfile(username, email, role, image) {
+
+    var roleName = "";
+    if(role == 1){
+        roleName = 'Admin';
+    } else if(role==2){
+        roleName = 'User';
+    } else {
+        roleName = 'Client';
+    }
+
+    if(image = ""){
+        image = "user.png";
+    }
+    $(".modal-choosetitle").html(username);
+    $("#username-choose").html(username);
+    $("#email-choose").html(email);
+    $("#role-choose").html(roleName);
+    $("#choose-image").attr("src", "/static/images/thumb/"+image);
+
+    $('#modal-choose').modal('show');
+}
+
 $.fn.editable.defaults.mode = 'inline';
 
 $(document).ready(function () {
     $('#modal-fullname').editable({
-        success: function(response, newValue) {
-            if(response.status == 'error') return response.msg; //msg will be shown in editable form
+        success: function (response, newValue) {
+            if (response.status == 'error') return response.msg; //msg will be shown in editable form
         }
     });
     $('#modal-password').editable({
-        success: function(response, newValue) {
-            if(response.status == 'error') return response.msg; //msg will be shown in editable form
+        success: function (response, newValue) {
+            if (response.status == 'error') return response.msg; //msg will be shown in editable form
         }
     });
 });

@@ -92,7 +92,7 @@ passport.use(new Strategy(
             req.session.user = user;
             req.session.userId = user.id;
 
-            var userid = 'user' + req.session.userId;
+            var userid = 'user' + req.session.user.id;
 
             var a = socketArray.indexOf(userid);
             if (a >= 0) {
@@ -218,7 +218,7 @@ app.post('/forgot', function (req, res) {
 app.get('/logout',
     function (req, res) {
         if (req.isAuthenticated()) {
-            var index = socketArray.indexOf(req.user.id);
+            var index = socketArray.indexOf(req.session.user.id);
             socketArray.splice(index, 1);
             console.log("socket logout  " + socketArray);
 
@@ -279,10 +279,14 @@ function loggedIn(req, res, next) {
 }
 
 var isAdmin = function (req, res, next) {
-    if (req.user.roleId == 1) {
-        next();
+    if (!req.session.user) {
+        res.redirect('/login');
     } else {
-        res.redirect('/');
+        if (req.session.user.roleId == 1) {
+            next();
+        } else {
+            res.redirect('/');
+        }
     }
 }
 app.get('/socket.io-file-client.js', function (req, res, next) {

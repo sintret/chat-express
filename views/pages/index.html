@@ -69,23 +69,21 @@
                     <input type="hidden" id="input<%= result.id;%>" value="<%= result.username;%>">
                     <input type="hidden" id="avatar<%= result.id;%>" value="/static/images/thumb/<%= result.photo;%>">
 
-                    <div class="row sideBar-body" data-id="<%= result.id; %>" data-u="user<%= result.id; %>"
-                         data-username="<%= result.username; %>" data-photo="<%= result.photo; %>">
+                    <% if(roleId != result.roleId) { %>
+                    <div class="row sideBar-body" data-id="<%= result.id; %>" data-u="user<%= result.id; %>" data-username="<%= result.username; %>" data-photo="<%= result.photo; %>">
                         <div class="col-sm-3 col-xs-3 sideBar-avatar">
-                            <div class="avatar-icon">
+                            <div class="avatar-icon" onclick='chooseProfile("<%= result.username; %>", "<%= result.email; %>", "<%= result.roleId; %>", "<%= result.photo; %>") ' >
                                 <img src="/static/images/thumb/<%= result.photo %>">
                             </div>
                         </div>
                         <div class="col-sm-9 col-xs-9 sideBar-main">
                             <div class="row">
-                                <div class="col-sm-8 col-xs-8 sideBar-name"><span class="name-meta"><%= result.username %></span>
-                                </div>
-                                <div class="col-sm-4 col-xs-4 pull-right sideBar-time"><span
-                                        id="online<%= result.id; %>" class="online-meta pull-right heading-compose">connected</span>
-                                </div>
+                                <div class="col-sm-8 col-xs-8 sideBar-name"><span class="name-meta"><%= result.username %></span></div>
+                                <div class="col-sm-4 col-xs-4 pull-right sideBar-time"><span id="online<%= result.id; %>" class="online-meta pull-right heading-compose">connected</span></div>
                             </div>
                         </div>
                     </div>
+                    <% } %>
 
                     <%  y++});} %>
 
@@ -132,11 +130,6 @@
                         <img src="/static/images/thumb/b.jpg" title="test satu">
                     </div>
                 </div>
-                <!-- <div class="col-sm-8 col-xs-7 heading-name">
-                     <a class="heading-name-meta">Test cc Satu</a>
-                     <span class="heading-online">Online</span>
-                 </div>-->
-
             </div>
             <!-- Heading End -->
 
@@ -154,23 +147,18 @@
             </div>
             <!-- Message Box End -->
 
+            <% if(roleId !=3) { %>
             <!-- Reply Box -->
             <div class="row reply">
-                <!-- <div class="col-sm-1 col-xs-1 reply-emojis">
-                     <i class="fa fa-smile-o fa-2x"></i>
-                 </div>-->
                 <div class="col-sm-10 col-xs-10 reply-main footerbox">
                     <textarea class="form-control" rows="1" id="comment"></textarea>
                 </div>
-                <!-- <div class="col-sm-1 col-xs-1 reply-recording">
-                     <i class="fa fa-microphone fa-2x" aria-hidden="true"></i>
-                 </div>-->
                 <div class="col-sm-1 col-xs-1 reply-send" id="send-comment">
                     <i class="fa fa-send fa-2x" aria-hidden="true"></i>
                 </div>
-
             </div>
             <!-- Reply Box End -->
+            <% } %>
         </div>
         <!-- Conversation End -->
     </div>
